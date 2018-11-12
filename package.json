@@ -40,9 +40,9 @@
     "axios": "^0.18.0",
     "curlrequest": "^1.0.1",
     "ethereumjs-tx": "^1.3.7",
-    "ew-market-contracts": "^0.0.2",
     "ew-asset-registry-contracts": "v0.1.6",
     "ew-asset-registry-lib": "^0.0.3",
+    "ew-market-contracts": "^0.0.2",
     "ew-user-registry-contracts": "0.0.6",
     "ew-utils-general-lib": "0.0.2",
     "ew-utils-testbackend": "0.0.3",
@@ -51,7 +51,8 @@
     "sloffle": "v1.3.0-beta06",
     "web3": "^1.0.0-beta.36",
     "winston": "^3.0.0",
-    "write-json-file": "^2.3.0"
+    "write-json-file": "^2.3.0",
+    "yaeti": "^1.0.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",
