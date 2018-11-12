@@ -207,7 +207,7 @@ describe('Market-Facade', () => {
             //  console.log(supply);
         });
 
-        it('should return suppky', async () => {
+        it('should return supply', async () => {
 
             const supply: Market.Supply.Entity = await (new Market.Supply.Entity('0', conf)).sync();
 
