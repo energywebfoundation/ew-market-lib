@@ -204,7 +204,6 @@ describe('Market-Facade', () => {
                 url: 'abc',
                 assetId: '0',
             });
-            //  console.log(supply);
         });
 
         it('should return supply', async () => {
@@ -223,5 +222,53 @@ describe('Market-Facade', () => {
 
             });
         });
+    });
+    describe('Agreement-Facade', () => {
+
+        it('should create an agreement', async () => {
+
+            const agreementProps: Market.Agreement.AgreementOnChainProperties = {
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: 0,
+                supplyId: 0,
+
+            };
+
+            const agreement = await Market.Agreement.createAgreement(agreementProps, conf);
+            delete agreement.proofs;
+            delete agreement.configuration;
+
+            assert.deepEqual(agreement as any, {
+                id: '0',
+                initialized: true,
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: '0',
+                supplyId: '0',
+                approvedBySupplyOwner: true,
+                approvedByDemandOwner: true,
+            });
+        });
+
+        it('should return an agreement', async () => {
+
+            const agreement: Market.Agreement.Entity = await (new Market.Agreement.Entity('0', conf)).sync();
+
+            delete agreement.proofs;
+            delete agreement.configuration;
+
+            assert.deepEqual(agreement as any, {
+                id: '0',
+                initialized: true,
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: '0',
+                supplyId: '0',
+                approvedBySupplyOwner: true,
+                approvedByDemandOwner: true,
+            });
+        });
+
     });
 });
