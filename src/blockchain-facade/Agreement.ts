@@ -1,5 +1,5 @@
 import * as GeneralLib from 'ew-utils-general-lib';
-import { TransactionReceipt } from 'ew-utils-general-lib/dist/js/types/types';
+import { TransactionReceipt } from 'web3/types';
 
 export interface AgreementOnChainProperties extends GeneralLib.BlockchainDataModelEntity.OnChainProperties {
     demandId: number;

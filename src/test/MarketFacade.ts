@@ -18,7 +18,7 @@ import { assert } from 'chai';
 import * as fs from 'fs';
 
 import 'mocha';
-import { Web3Type } from '../types/web3';
+import Web3 = require('web3');
 import * as GeneralLib from 'ew-utils-general-lib';
 import { logger } from '../Logger';
 import { UserContractLookup, UserLogic, migrateUserRegistryContracts } from 'ew-user-registry-contracts';
@@ -30,8 +30,6 @@ import { deepEqual } from 'assert';
 
 describe('Market-Facade', () => {
     const configFile = JSON.parse(fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8'));
-
-    const Web3 = require('web3');
 
     const web3 = new Web3(configFile.develop.web3);
 
