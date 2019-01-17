@@ -43,7 +43,7 @@
     "ew-asset-registry-lib": "0.0.12-beta06",
     "ew-origin-contracts": "0.0.5-beta02",
     "ew-user-registry-contracts": "0.0.9",
-    "ew-utils-general-lib": "0.0.2",
+    "ew-utils-general-lib": "v0.0.9-beta01",
     "ew-utils-testbackend": "0.0.3",
     "ew-market-contracts": "0.0.3-beta01",
     "precise-proofs": "0.0.1",
