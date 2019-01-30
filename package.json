@@ -16,7 +16,7 @@
     "setup-SS": "npm run build-ts && node build/ts/utils/deployment/secretStore",
     "build-and-deploy": "npm run build && npm run deploy-contracts",
     "deploy-contracts": "node build/ts/utils/deployment/startMigrate",
-    "build": "npm run compile-contracts && npm run build-ts && npm run build-schemas",
+    "build": "npm run build-schemas && npm run build-ts",
     "precompile-contracts": "rm -rf build/contracts",
     "compile-contracts": "node build/ts/utils/deployment/compile",
     "prebuild-ts": "rm -rf build/ts",
