@@ -11,7 +11,7 @@ export const getDemandListLength = async (configuration: GeneralLib.Configuratio
 
 export const createDemand =
     async (demandPropertiesOnChain: DemandOnChainProperties,
-           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const demand = new Entity(null, configuration);
 
         /*
