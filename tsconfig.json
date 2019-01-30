@@ -5,9 +5,11 @@
         "noImplicitAny": false,
         "declaration": true,
         "module": "CommonJS",
-        "target": "es6",
+        "target": "es5",
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
         "lib": [
             "es2017",
             "dom"

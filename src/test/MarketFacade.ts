@@ -20,19 +20,22 @@ import * as fs from 'fs';
 import 'mocha';
 import { Web3Type } from '../types/web3';
 import * as GeneralLib from 'ew-utils-general-lib';
-import { logger } from '../Logger';
 import { UserContractLookup, UserLogic, migrateUserRegistryContracts } from 'ew-user-registry-contracts';
-import { migrateAssetRegistryContracts, AssetConsumingRegistryLogic, AssetProducingRegistryLogic } from 'ew-asset-registry-contracts';
+import { migrateAssetRegistryContracts, AssetConsumingRegistryLogic, AssetProducingRegistryLogic, AssetContractLookup } from 'ew-asset-registry-contracts';
 import { migrateMarketRegistryContracts, MarketLogic } from 'ew-market-contracts';
+import { OriginContractLookup, CertificateLogic, migrateCertificateRegistryContracts } from 'ew-origin-contracts';
+
 import * as Market from '..';
 import * as Asset from 'ew-asset-registry-lib';
 import { deepEqual } from 'assert';
+import { logger } from '../Logger';
+import { MatcherOffchainProperties, AgreementOffChainProperties } from '../blockchain-facade/Agreement';
 
 describe('Market-Facade', () => {
     const configFile = JSON.parse(fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8'));
 
     const Web3 = require('web3');
-    const web3: Web3Type = new Web3(configFile.develop.web3);
+    const web3 = new Web3(configFile.develop.web3);
 
     const privateKeyDeployment = configFile.develop.deployKey.startsWith('0x') ?
         configFile.develop.deployKey : '0x' + configFile.develop.deployKey;
@@ -40,11 +43,12 @@ describe('Market-Facade', () => {
     const accountDeployment = web3.eth.accounts.privateKeyToAccount(privateKeyDeployment).address;
 
     console.log('acc-deployment: ' + accountDeployment);
-    let conf: GeneralLib.Configuration.Entity;
+    let conf;
     let userLogic: UserLogic;
     let userContractLookup: UserContractLookup;
     let assetProducingRegistry: AssetProducingRegistryLogic;
     let marketLogic: MarketLogic;
+    let assetRegistryContract: AssetContractLookup;
 
     let userContractLookupAddr;
     let assetContractLookupAddr;
@@ -62,27 +66,34 @@ describe('Market-Facade', () => {
     const assetSmartMeter2 = web3.eth.accounts.privateKeyToAccount(assetSmartmeter2PK).address;
 
     it('should deploy user-registry contracts', async () => {
-        const userContracts = await migrateUserRegistryContracts((web3 as any));
-        userContractLookupAddr =
-            userContracts[process.cwd() + '/node_modules/ew-user-registry-contracts/dist/contracts/UserContractLookup.json'];
-        userLogic =
-            new UserLogic((web3 as any), userContracts[process.cwd() + '/node_modules/ew-user-registry-contracts/dist/contracts/UserLogic.json']);
+        const userContracts = await migrateUserRegistryContracts((web3 as any), privateKeyDeployment);
+        userContractLookupAddr = (userContracts as any).UserContractLookup;
+
+        userLogic = userLogic = new UserLogic((web3 as any), (userContracts as any).UserLogic);
 
         await userLogic.setUser(accountDeployment, 'admin', { privateKey: privateKeyDeployment });
 
         await userLogic.setRoles(accountDeployment, 63, { privateKey: privateKeyDeployment });
+        userContractLookup = new UserContractLookup((web3 as any), userContractLookupAddr);
 
     });
 
     it('should deploy asset-registry contracts', async () => {
-        const deployedContracts = await migrateAssetRegistryContracts((web3 as any), userContractLookupAddr);
-        assetProducingRegistry = new AssetProducingRegistryLogic((web3 as any), deployedContracts[process.cwd() + '/node_modules/ew-asset-registry-contracts/dist/contracts/AssetProducingRegistryLogic.json']);
-        assetContractLookupAddr = deployedContracts[process.cwd() + '/node_modules/ew-asset-registry-contracts/dist/contracts/AssetContractLookup.json'];
+        const assetContracts = await migrateAssetRegistryContracts(
+            (web3 as any), userContractLookupAddr, privateKeyDeployment);
+        assetContractLookupAddr = (assetContracts as any).AssetContractLookup;
+
+        const assetProducingAddr = (assetContracts as any).AssetProducingRegistryLogic;
+        const originContracts = await migrateCertificateRegistryContracts(
+            (web3 as any), assetContractLookupAddr, privateKeyDeployment);
+
+        assetRegistryContract = new AssetContractLookup((web3 as any), assetContractLookupAddr);
+        assetProducingRegistry = new AssetProducingRegistryLogic((web3 as any), assetProducingAddr);
     });
 
     it('should deploy market-registry contracts', async () => {
-        const deployedContracts = await migrateMarketRegistryContracts((web3 as any), assetContractLookupAddr);
-        marketLogic = new MarketLogic((web3 as any), deployedContracts[process.cwd() + '/node_modules/ew-market-contracts/dist/contracts/MarketLogic.json']);
+        const marketContracts = await migrateMarketRegistryContracts((web3 as any), assetContractLookupAddr, privateKeyDeployment);
+        marketLogic = new MarketLogic((web3 as any), (marketContracts as any).MarketLogic);
 
     });
 
@@ -130,7 +141,7 @@ describe('Market-Facade', () => {
 
         it('should return demand', async () => {
 
-            const demand: Market.Demand.Entity = await (new Market.Demand.Entity('0', conf)).sync();
+            const demand: Market.Demand.Entity = (await new Market.Demand.Entity('0', conf)).sync();
 
             delete demand.proofs;
             delete demand.configuration;
@@ -227,15 +238,30 @@ describe('Market-Facade', () => {
 
         it('should create an agreement', async () => {
 
-            const agreementProps: Market.Agreement.AgreementOnChainProperties = {
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
-                demandId: 0,
-                supplyId: 0,
-
+            const matcherOffchainProps: MatcherOffchainProperties = {
+                currentPeriod: 0,
+                currentWh: 0,
             };
 
-            const agreement = await Market.Agreement.createAgreement(agreementProps, conf);
+            const agreementOffchainProps: AgreementOffChainProperties = {
+                start: Date.now(),
+                ende: Date.now() + 10000,
+                price: 10,
+                currency: 'USD',
+                period: 1,
+            };
+
+            const agreementOnchainProps: Market.Agreement.AgreementOnChainProperties = {
+                demandId: 0,
+                supplyId: 0,
+                propertiesDocumentHash: null,
+                url: null,
+                matcherDBURL: null,
+                matcherPropertiesDocumentHash: null,
+                allowedMatcher: [],
+            };
+
+            const agreement = await Market.Agreement.createAgreement(agreementOnchainProps, agreementOffchainProps, matcherOffchainProps, conf);
             delete agreement.proofs;
             delete agreement.configuration;
 
