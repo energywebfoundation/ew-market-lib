@@ -46,7 +46,7 @@
     "ew-user-registry-contracts": "0.0.9",
     "ew-utils-general-lib": "v0.0.9-beta01",
     "ew-utils-testbackend": "0.0.6",
-    "ew-market-contracts": "0.0.4-beta1",
+    "ew-market-contracts": "0.0.4-beta02",
     "jsonschema": "^1.2.4",
     "precise-proofs": "0.0.1",
     "sloffle": "v1.3.0-beta06",

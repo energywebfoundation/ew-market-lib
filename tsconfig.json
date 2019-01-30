@@ -5,7 +5,7 @@
         "noImplicitAny": false,
         "declaration": true,
         "module": "CommonJS",
-        "target": "es5",
+        "target": "es6",
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,

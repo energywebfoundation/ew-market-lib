@@ -27,6 +27,7 @@ import { migrateMarketRegistryContracts, MarketLogic } from 'ew-market-contracts
 import * as Market from '..';
 import * as Asset from 'ew-asset-registry-lib';
 import { deepEqual } from 'assert';
+import { AgreementOffChainProperties, MatcherOffchainProperties } from '../blockchain-facade/Agreement';
 
 describe('Market-Facade', () => {
     const configFile = JSON.parse(fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8'));
@@ -241,7 +242,6 @@ describe('Market-Facade', () => {
         });
     });
 
-    /*
     describe('Agreement-Facade', () => {
 
         it('should create an agreement', async () => {
@@ -251,27 +251,47 @@ describe('Market-Facade', () => {
                 privateKey: traderPK,
             };
 
+            const agreementOffchainProps: AgreementOffChainProperties = {
+                start: Date.now(),
+                ende: Date.now() + 1000,
+                price: 10,
+                currency: 'USD',
+                period: 10,
+            };
+
+            const matcherOffchainProps: MatcherOffchainProperties = {
+                currentWh: 0,
+                currentPeriod: 0,
+            };
+
             const agreementProps: Market.Agreement.AgreementOnChainProperties = {
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                propertiesDocumentHash: null,
+                url: null,
+                matcherDBURL: null,
+                matcherPropertiesDocumentHash: null,
                 demandId: 0,
                 supplyId: 0,
+                allowedMatcher: [],
 
             };
 
-            const agreement = await Market.Agreement.createAgreement(agreementProps, conf);
+            const agreement = await Market.Agreement.createAgreement(
+                agreementProps, agreementOffchainProps, matcherOffchainProps, conf);
             delete agreement.proofs;
             delete agreement.configuration;
+            delete agreement.propertiesDocumentHash;
+            delete agreement.matcherPropertiesDocumentHash;
 
             assert.deepEqual(agreement as any, {
+                allowedMatcher: [matcher],
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                url: 'http://localhost:3030/Agreement',
                 demandId: '0',
                 supplyId: '0',
                 approvedBySupplyOwner: false,
                 approvedByDemandOwner: true,
+                matcherDBURL: 'http://localhost:3030/Matcher',
             });
         });
 
@@ -281,16 +301,19 @@ describe('Market-Facade', () => {
 
             delete agreement.proofs;
             delete agreement.configuration;
+            delete agreement.propertiesDocumentHash;
+            delete agreement.matcherPropertiesDocumentHash;
 
             assert.deepEqual(agreement as any, {
+                allowedMatcher: [matcher],
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                url: 'http://localhost:3030/Agreement',
                 demandId: '0',
                 supplyId: '0',
                 approvedBySupplyOwner: false,
                 approvedByDemandOwner: true,
+                matcherDBURL: 'http://localhost:3030/Matcher',
             });
         });
 
@@ -308,18 +331,20 @@ describe('Market-Facade', () => {
             agreement = await agreement.sync();
             delete agreement.proofs;
             delete agreement.configuration;
+            delete agreement.propertiesDocumentHash;
+            delete agreement.matcherPropertiesDocumentHash;
 
             assert.deepEqual(agreement as any, {
+                allowedMatcher: [matcher],
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                url: 'http://localhost:3030/Agreement',
                 demandId: '0',
                 supplyId: '0',
                 approvedBySupplyOwner: true,
                 approvedByDemandOwner: true,
+                matcherDBURL: 'http://localhost:3030/Matcher',
             });
-
         });
 
         it('should create a 2nd agreement', async () => {
@@ -329,27 +354,48 @@ describe('Market-Facade', () => {
                 privateKey: assetOwnerPK,
             };
 
+            const agreementOffchainProps: AgreementOffChainProperties = {
+                start: Date.now(),
+                ende: Date.now() + 1000,
+                price: 10,
+                currency: 'USD',
+                period: 10,
+            };
+
+            const matcherOffchainProps: MatcherOffchainProperties = {
+                currentWh: 0,
+                currentPeriod: 0,
+            };
+
             const agreementProps: Market.Agreement.AgreementOnChainProperties = {
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                propertiesDocumentHash: null,
+                url: null,
+                matcherDBURL: null,
+                matcherPropertiesDocumentHash: null,
                 demandId: 0,
                 supplyId: 0,
+                allowedMatcher: [],
 
             };
 
-            const agreement = await Market.Agreement.createAgreement(agreementProps, conf);
+            const agreement = await Market.Agreement.createAgreement(
+                agreementProps, agreementOffchainProps, matcherOffchainProps, conf);
             delete agreement.proofs;
             delete agreement.configuration;
+            delete agreement.propertiesDocumentHash;
+            delete agreement.matcherPropertiesDocumentHash;
 
             assert.deepEqual(agreement as any, {
+                allowedMatcher: [matcher],
                 id: '1',
                 initialized: true,
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                url: 'http://localhost:3030/Agreement',
                 demandId: '0',
                 supplyId: '0',
                 approvedBySupplyOwner: true,
                 approvedByDemandOwner: false,
+                matcherDBURL: 'http://localhost:3030/Matcher',
+
             });
         });
 
@@ -367,18 +413,22 @@ describe('Market-Facade', () => {
             agreement = await agreement.sync();
             delete agreement.proofs;
             delete agreement.configuration;
+            delete agreement.propertiesDocumentHash;
+            delete agreement.matcherPropertiesDocumentHash;
 
             assert.deepEqual(agreement as any, {
+                allowedMatcher: [matcher],
                 id: '1',
                 initialized: true,
-                propertiesDocumentHash: 'agreementProps',
-                url: 'abc',
+                url: 'http://localhost:3030/Agreement',
                 demandId: '0',
                 supplyId: '0',
                 approvedBySupplyOwner: true,
                 approvedByDemandOwner: true,
+                matcherDBURL: 'http://localhost:3030/Matcher',
+
             });
 
         });
-    });*/
+    });
 });
