@@ -18,7 +18,7 @@ import { assert } from 'chai';
 import * as fs from 'fs';
 
 import 'mocha';
-import { Web3Type } from '../types/web3';
+import Web3 = require('web3');
 import * as GeneralLib from 'ew-utils-general-lib';
 import { UserContractLookup, UserLogic, migrateUserRegistryContracts } from 'ew-user-registry-contracts';
 import { migrateAssetRegistryContracts, AssetConsumingRegistryLogic, AssetProducingRegistryLogic, AssetContractLookup } from 'ew-asset-registry-contracts';
@@ -65,16 +65,26 @@ describe('Market-Facade', () => {
     const assetSmartmeter2PK = '0x554f3c1470e9f66ed2cf1dc260d2f4de77a816af2883679b1dc68c551e8fa5ed';
     const assetSmartMeter2 = web3.eth.accounts.privateKeyToAccount(assetSmartmeter2PK).address;
 
+    const traderPK = '0x2dc5120c26df339dbd9861a0f39a79d87e0638d30fdedc938861beac77bbd3f5';
+    const accountTrader = web3.eth.accounts.privateKeyToAccount(traderPK).address;
+
     it('should deploy user-registry contracts', async () => {
         const userContracts = await migrateUserRegistryContracts((web3 as any), privateKeyDeployment);
         userContractLookupAddr = (userContracts as any).UserContractLookup;
 
         userLogic = userLogic = new UserLogic((web3 as any), (userContracts as any).UserLogic);
 
+        userLogic = new UserLogic((web3 as any), (userContracts as any).UserLogic);
         await userLogic.setUser(accountDeployment, 'admin', { privateKey: privateKeyDeployment });
 
         await userLogic.setRoles(accountDeployment, 63, { privateKey: privateKeyDeployment });
         userContractLookup = new UserContractLookup((web3 as any), userContractLookupAddr);
+
+        await userLogic.setUser(accountTrader, 'trader', { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountTrader, 16, { privateKey: privateKeyDeployment });
+
+        await userLogic.setUser(assetOwnerAddress, 'assetOwner', { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(assetOwnerAddress, 24, { privateKey: privateKeyDeployment });
 
     });
 
@@ -104,7 +114,7 @@ describe('Market-Facade', () => {
             conf = {
                 blockchainProperties: {
                     activeUser: {
-                        address: accountDeployment, privateKey: privateKeyDeployment,
+                        address: accountTrader, privateKey: traderPK,
                     },
                     userLogicInstance: userLogic,
                     producingAssetLogicInstance: assetProducingRegistry,
@@ -134,14 +144,14 @@ describe('Market-Facade', () => {
                 initialized: true,
                 propertiesDocumentHash: 'propDocHash',
                 url: 'abc',
-                demandOwner: accountDeployment,
+                demandOwner: accountTrader,
             });
 
         });
 
         it('should return demand', async () => {
 
-            const demand: Market.Demand.Entity = (await new Market.Demand.Entity('0', conf)).sync();
+            const demand: Market.Demand.Entity = await (new Market.Demand.Entity('0', conf)).sync();
 
             delete demand.proofs;
             delete demand.configuration;
@@ -151,7 +161,7 @@ describe('Market-Facade', () => {
                 initialized: true,
                 propertiesDocumentHash: 'propDocHash',
                 url: 'abc',
-                demandOwner: accountDeployment,
+                demandOwner: accountTrader,
             });
 
         });
@@ -159,10 +169,16 @@ describe('Market-Facade', () => {
 
     describe('Supply-Facade', () => {
         it('should onboard an asset', async () => {
+
+            conf.blockchainProperties.activeUser = {
+                address: accountDeployment,
+                privateKey: privateKeyDeployment,
+            };
+
             const assetProps: Asset.ProducingAsset.OnChainProperties = {
                 certificatesUsedForWh: 0,
                 smartMeter: { address: assetSmartmeter },
-                owner: { address: accountDeployment },
+                owner: { address: assetOwnerAddress },
                 lastSmartMeterReadWh: 0,
                 active: true,
                 lastSmartMeterReadFileHash: 'lastSmartMeterReadFileHash',
@@ -197,6 +213,11 @@ describe('Market-Facade', () => {
         });
 
         it('should onboard an supply', async () => {
+
+            conf.blockchainProperties.activeUser = {
+                address: assetOwnerAddress,
+                privateKey: assetOwnerPK,
+            };
 
             const supplyProps: Market.Supply.SupplyOnChainProperties = {
                 url: 'abc',
@@ -272,7 +293,7 @@ describe('Market-Facade', () => {
                 url: 'abc',
                 demandId: '0',
                 supplyId: '0',
-                approvedBySupplyOwner: true,
+                approvedBySupplyOwner: false,
                 approvedByDemandOwner: true,
             });
         });
@@ -291,10 +312,113 @@ describe('Market-Facade', () => {
                 url: 'abc',
                 demandId: '0',
                 supplyId: '0',
-                approvedBySupplyOwner: true,
+                approvedBySupplyOwner: false,
                 approvedByDemandOwner: true,
             });
         });
 
+        it('should agree to an agreement as supply', async () => {
+
+            conf.blockchainProperties.activeUser = {
+                address: assetOwnerAddress,
+                privateKey: assetOwnerPK,
+            };
+
+            let agreement: Market.Agreement.Entity = await (new Market.Agreement.Entity('0', conf)).sync();
+
+            await agreement.approveAgreementSupply();
+
+            agreement = await agreement.sync();
+            delete agreement.proofs;
+            delete agreement.configuration;
+
+            assert.deepEqual(agreement as any, {
+                id: '0',
+                initialized: true,
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: '0',
+                supplyId: '0',
+                approvedBySupplyOwner: true,
+                approvedByDemandOwner: true,
+            });
+
+        });
+
+        it('should create a 2nd agreement', async () => {
+
+            conf.blockchainProperties.activeUser = {
+                address: assetOwnerAddress,
+                privateKey: assetOwnerPK,
+            };
+
+            const matcherOffchainProps: MatcherOffchainProperties = {
+                currentPeriod: 0,
+                currentWh: 0,
+            };
+
+            const agreementOffchainProps: AgreementOffChainProperties = {
+                start: Date.now(),
+                ende: Date.now() + 10000,
+                price: 10,
+                currency: 'USD',
+                period: 1,
+            };
+
+            const agreementOnchainProps: Market.Agreement.AgreementOnChainProperties = {
+                demandId: 0,
+                supplyId: 0,
+                propertiesDocumentHash: null,
+                url: null,
+                matcherDBURL: null,
+                matcherPropertiesDocumentHash: null,
+                allowedMatcher: [],
+            };
+
+            const agreement = await Market.Agreement.createAgreement(agreementOnchainProps, agreementOffchainProps, matcherOffchainProps, conf);
+
+            //   const agreement = await Market.Agreement.createAgreement(agreementProps, conf);
+            delete agreement.proofs;
+            delete agreement.configuration;
+
+            assert.deepEqual(agreement as any, {
+                id: '1',
+                initialized: true,
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: '0',
+                supplyId: '0',
+                approvedBySupplyOwner: true,
+                approvedByDemandOwner: false,
+            });
+        });
+
+        it('should agree to an agreement as demand', async () => {
+
+            conf.blockchainProperties.activeUser = {
+                address: accountTrader,
+                privateKey: traderPK,
+            };
+
+            let agreement: Market.Agreement.Entity = await (new Market.Agreement.Entity('1', conf)).sync();
+
+            await agreement.approveAgreementDemand();
+
+            agreement = await agreement.sync();
+            delete agreement.proofs;
+            delete agreement.configuration;
+
+            assert.deepEqual(agreement as any, {
+                id: '1',
+                initialized: true,
+                propertiesDocumentHash: 'agreementProps',
+                url: 'abc',
+                demandId: '0',
+                supplyId: '0',
+                approvedBySupplyOwner: true,
+                approvedByDemandOwner: true,
+            });
+
+        });
     });
 });

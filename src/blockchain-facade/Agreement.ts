@@ -1,6 +1,7 @@
 import * as GeneralLib from 'ew-utils-general-lib';
 import AgreementOffchainPropertiesSchema from '../../schemas/AgreementOffChainProperties.schema.json';
 import MatcherOffchainPropertiesSchema from '../../schemas/MatcherOffchainProperties.schema.json';
+import { TransactionReceipt } from 'web3/types';
 
 export interface AgreementOffChainProperties {
     start: number;
@@ -70,8 +71,6 @@ export const createAgreement =
 
         return agreement.sync();
 
-        return null;
-
     };
 
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implements AgreementOnChainProperties {
@@ -120,6 +119,32 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
             this.initialized = true;
         }
         return this;
+    }
 
+    async approveAgreementDemand(): Promise<TransactionReceipt> {
+        if (this.configuration.blockchainProperties.activeUser.privateKey) {
+            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementDemand(
+                this.id,
+                { privateKey: this.configuration.blockchainProperties.activeUser.privateKey });
+        }
+        else {
+            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementDemand(
+                this.id,
+                { from: this.configuration.blockchainProperties.activeUser.address },
+            );
+        }
+    }
+
+    async approveAgreementSupply(): Promise<TransactionReceipt> {
+        if (this.configuration.blockchainProperties.activeUser.privateKey) {
+            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementSupply(
+                this.id,
+                { privateKey: this.configuration.blockchainProperties.activeUser.privateKey });
+        }
+        else {
+            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementSupply(
+                this.id,
+                { from: this.configuration.blockchainProperties.activeUser.address });
+        }
     }
 }
