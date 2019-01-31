@@ -72,7 +72,11 @@ export const createAgreement =
         await agreement.putToOffChainStorage(agreementPropertiesOffchain, agreementOffChainStorageProperties);
         await agreement.putToOffChainStorage(matcherPropertiesOffchain, matcherOffchainStorageProperties, agreement.getMatcherURL());
 
-        configuration.logger.info(`Agreement ${agreement.id} created`);
+        if (configuration.logger) {
+            configuration.logger.info(`Agreement ${agreement.id} created`);
+        }
+
+        
 
         return agreement.sync();
 

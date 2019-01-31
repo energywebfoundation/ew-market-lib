@@ -36,7 +36,10 @@ export const createDemand =
 
         //    await demand.putToOffChainStorage(null, offChainStorageProperties);
 
-        configuration.logger.info(`Demand ${demand.id} created`);
+        if (configuration.logger) {
+            configuration.logger.info(`Demand ${demand.id} created`);
+        } 
+        
 
         return demand.sync();
 
@@ -70,7 +73,10 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
             this.url = demand._documentDBURL;
             this.demandOwner = demand._owner;
             this.initialized = true;
-            this.configuration.logger.verbose(`Demand ${this.id} synced`);
+            if (this.configuration.logger) {
+                this.configuration.logger.verbose(`Demand ${this.id} synced`);
+            }
+            
 
         }
         return this;
