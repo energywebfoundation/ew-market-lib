@@ -6,7 +6,7 @@ export interface SupplyOnChainProperties extends GeneralLib.BlockchainDataModelE
 
 export const getSupplyListLength = async (configuration: GeneralLib.Configuration.Entity) => {
 
-    return parseInt(await configuration.blockchainProperties.demandLogicInstance.getAllDemandListLength(), 10);
+    return parseInt(await configuration.blockchainProperties.marketLogicInstance.getAllDemandListLength(), 10);
 };
 
 export const createSupply =
@@ -23,7 +23,7 @@ export const createSupply =
             demandPropertiesOnChain.propertiesDocumentHash = offChainStorageProperties.rootHash;
         }*/
 
-        const tx = await configuration.blockchainProperties.demandLogicInstance.createSupply(
+        const tx = await configuration.blockchainProperties.marketLogicInstance.createSupply(
             supplyPropertiesOnChain.propertiesDocumentHash,
             supplyPropertiesOnChain.url,
             supplyPropertiesOnChain.assetId,
@@ -69,7 +69,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
 
     async sync(): Promise<Entity> {
         if (this.id != null) {
-            const demand = await this.configuration.blockchainProperties.demandLogicInstance.getSupply(this.id);
+            const demand = await this.configuration.blockchainProperties.marketLogicInstance.getSupply(this.id);
 
             this.propertiesDocumentHash = demand._propertiesDocumentHash;
             this.url = demand._documentDBURL;

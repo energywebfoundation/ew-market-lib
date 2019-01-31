@@ -104,7 +104,7 @@ describe('Market-Facade', () => {
                     },
                     userLogicInstance: userLogic,
                     producingAssetLogicInstance: assetProducingRegistry,
-                    demandLogicInstance: marketLogic,
+                    marketLogicInstance: marketLogic,
                     web3,
                 },
                 offChainDataSource: {

@@ -54,7 +54,7 @@ export const createAgreement =
             agreementPropertiesOnChain.matcherPropertiesDocumentHash = matcherOffchainStorageProperties.rootHash;
         }
 
-        const tx = await configuration.blockchainProperties.demandLogicInstance.createAgreement(
+        const tx = await configuration.blockchainProperties.marketLogicInstance.createAgreement(
             agreementPropertiesOnChain.propertiesDocumentHash,
             agreementPropertiesOnChain.url,
             agreementPropertiesOnChain.matcherPropertiesDocumentHash,
@@ -115,7 +115,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
 
     async sync(): Promise<Entity> {
         if (this.id != null) {
-            const agreement = await this.configuration.blockchainProperties.demandLogicInstance.getAgreement(this.id);
+            const agreement = await this.configuration.blockchainProperties.marketLogicInstance.getAgreement(this.id);
 
             this.propertiesDocumentHash = agreement._propertiesDocumentHash;
             this.url = agreement._documentDBURL;
@@ -142,12 +142,12 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
 
     async approveAgreementDemand(): Promise<TransactionReceipt> {
         if (this.configuration.blockchainProperties.activeUser.privateKey) {
-            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementDemand(
+            return this.configuration.blockchainProperties.marketLogicInstance.approveAgreementDemand(
                 this.id,
                 { privateKey: this.configuration.blockchainProperties.activeUser.privateKey });
         }
         else {
-            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementDemand(
+            return this.configuration.blockchainProperties.marketLogicInstance.approveAgreementDemand(
                 this.id,
                 { from: this.configuration.blockchainProperties.activeUser.address },
             );
@@ -156,12 +156,12 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
 
     async approveAgreementSupply(): Promise<TransactionReceipt> {
         if (this.configuration.blockchainProperties.activeUser.privateKey) {
-            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementSupply(
+            return this.configuration.blockchainProperties.marketLogicInstance.approveAgreementSupply(
                 this.id,
                 { privateKey: this.configuration.blockchainProperties.activeUser.privateKey });
         }
         else {
-            return this.configuration.blockchainProperties.demandLogicInstance.approveAgreementSupply(
+            return this.configuration.blockchainProperties.marketLogicInstance.approveAgreementSupply(
                 this.id,
                 { from: this.configuration.blockchainProperties.activeUser.address });
         }
@@ -188,7 +188,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
         let tx;
 
         if (this.configuration.blockchainProperties.activeUser.privateKey) {
-            tx = await this.configuration.blockchainProperties.demandLogicInstance.setMatcherProperties(
+            tx = await this.configuration.blockchainProperties.marketLogicInstance.setMatcherProperties(
                 this.id,
                 matcherOffchainStorageProperties.rootHash,
                 this.matcherDBURL,
@@ -197,7 +197,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
 
         }
         else {
-            tx = await this.configuration.blockchainProperties.demandLogicInstance.setMatcherProperties(
+            tx = await this.configuration.blockchainProperties.marketLogicInstance.setMatcherProperties(
                 this.id,
                 matcherOffchainStorageProperties.rootHash,
                 this.matcherDBURL,
