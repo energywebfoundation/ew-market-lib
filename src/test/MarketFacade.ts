@@ -28,6 +28,7 @@ import * as Market from '..';
 import * as Asset from 'ew-asset-registry-lib';
 import { deepEqual } from 'assert';
 import { AgreementOffChainProperties, MatcherOffchainProperties } from '../blockchain-facade/Agreement';
+import { timingSafeEqual } from 'crypto';
 
 describe('Market-Facade', () => {
     const configFile = JSON.parse(fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8'));
@@ -113,14 +114,30 @@ describe('Market-Facade', () => {
                 logger,
             };
 
+            const demandOffchainProps: Market.Demand.DemandOffchainproperties = {
+                timeframe: GeneralLib.TimeFrame.hourly,
+                pricePerCertifiedWh: 10,
+                currency: GeneralLib.Currency.Ether,
+                productingAsset: 0,
+                consumingAsset: 0,
+                locationCountry: 'string',
+                locationRegion: 'string',
+                assettype: GeneralLib.AssetType.BiomassGas,
+                minCO2Offset: 10,
+                otherGreenAttributes: 'string',
+                typeOfPublicSupport: 'string',
+                targetWhPerPeriod: 10,
+                registryCompliance: GeneralLib.Compliance.EEC,
+            };
+
             const demandProps: Market.Demand.DemandOnChainProperties = {
-                url: 'abc',
-                propertiesDocumentHash: 'propDocHash',
+                url: null,
+                propertiesDocumentHash: null,
                 demandOwner: conf.blockchainProperties.activeUser.address,
 
             };
 
-            const demand = await Market.Demand.createDemand(demandProps, conf);
+            const demand = await Market.Demand.createDemand(demandProps, demandOffchainProps, conf);
 
             delete demand.proofs;
             delete demand.configuration;
@@ -141,13 +158,29 @@ describe('Market-Facade', () => {
 
             delete demand.proofs;
             delete demand.configuration;
+            delete demand.propertiesDocumentHash;
 
-            assert.deepEqual(demand, {
+            assert.deepEqual((demand as any), {
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'propDocHash',
-                url: 'abc',
+                url: 'http://localhost:3030/Demand',
                 demandOwner: accountTrader,
+                offChainProperties: {
+                    assettype: 3,
+                    consumingAsset: 0,
+                    currency: 3,
+                    locationCountry: 'string',
+                    locationRegion: 'string',
+                    minCO2Offset: 10,
+                    otherGreenAttributes: 'string',
+                    pricePerCertifiedWh: 10,
+                    productingAsset: 0,
+                    registryCompliance: 2,
+                    targetWhPerPeriod: 10,
+                    timeFrame: 3,
+                    typeOfPublicSupport: 'string',
+
+                },
             });
 
         });
@@ -258,8 +291,9 @@ describe('Market-Facade', () => {
                 start: startTime,
                 ende: startTime + 1000,
                 price: 10,
-                currency: 'USD',
+                currency: GeneralLib.Currency.USD,
                 period: 10,
+                timeframe: GeneralLib.TimeFrame.hourly,
             };
 
             const matcherOffchainProps: MatcherOffchainProperties = {
@@ -333,7 +367,7 @@ describe('Market-Facade', () => {
                     currentWh: 0,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: GeneralLib.Currency.USD,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
@@ -396,8 +430,10 @@ describe('Market-Facade', () => {
                 start: startTime,
                 ende: startTime + 1000,
                 price: 10,
-                currency: 'USD',
+                currency: GeneralLib.Currency.USD,
                 period: 10,
+                timeframe: GeneralLib.TimeFrame.hourly,
+
             };
 
             const matcherOffchainProps: MatcherOffchainProperties = {
