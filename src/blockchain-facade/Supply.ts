@@ -1,5 +1,13 @@
 import * as GeneralLib from 'ew-utils-general-lib';
 
+export interface SupplyOffchainProperties {
+    price: number;
+    currenty: GeneralLib.Currency;
+    availableWh: number;
+    timeframe: GeneralLib.TimeFrame;
+
+}
+
 export interface SupplyOnChainProperties extends GeneralLib.BlockchainDataModelEntity.OnChainProperties {
     assetId: number;
 }
@@ -11,7 +19,7 @@ export const getSupplyListLength = async (configuration: GeneralLib.Configuratio
 
 export const createSupply =
     async (supplyPropertiesOnChain: SupplyOnChainProperties,
-           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const demand = new Entity(null, configuration);
 
         /*
@@ -37,11 +45,7 @@ export const createSupply =
 
         //    await demand.putToOffChainStorage(null, offChainStorageProperties);
 
-        if (configuration.logger) {
-            configuration.logger.info(`Supply ${demand.id} created`);
-        }
-
-        
+        configuration.logger.info(`Supply ${demand.id} created`);
 
         return demand.sync();
 
@@ -75,10 +79,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
             this.url = demand._documentDBURL;
             this.assetId = demand._assetId;
             this.initialized = true;
-            if (this.configuration.logger) {
-                this.configuration.logger.verbose(`Supply ${this.id} synced`);
-            }
-            
+            this.configuration.logger.verbose(`Supply ${this.id} synced`);
 
         }
         return this;
