@@ -2,6 +2,7 @@ import * as GeneralLib from 'ew-utils-general-lib';
 import AgreementOffchainPropertiesSchema from '../../schemas/AgreementOffChainProperties.schema.json';
 import MatcherOffchainPropertiesSchema from '../../schemas/MatcherOffchainProperties.schema.json';
 import { TransactionReceipt } from 'web3/types';
+import { timingSafeEqual } from 'crypto';
 
 export interface AgreementOffChainProperties {
     start: number;
@@ -36,13 +37,14 @@ export const createAgreement =
             agreementPropertiesOnChain,
             agreementPropertiesOffchain,
             AgreementOffchainPropertiesSchema,
-            false);
+            agreement.getUrl(),
+        );
 
         const matcherOffchainStorageProperties = agreement.prepareEntityCreation(
             agreementPropertiesOnChain,
             matcherPropertiesOffchain,
             MatcherOffchainPropertiesSchema,
-            false);
+            agreement.getMatcherURL());
 
         if (configuration.offChainDataSource) {
             agreementPropertiesOnChain.url = agreement.getUrl();
@@ -67,6 +69,9 @@ export const createAgreement =
 
         agreement.id = configuration.blockchainProperties.web3.utils.hexToNumber(tx.logs[0].topics[1]).toString();
 
+        await agreement.putToOffChainStorage(agreementPropertiesOffchain, agreementOffChainStorageProperties);
+        await agreement.putToOffChainStorage(matcherPropertiesOffchain, matcherOffchainStorageProperties, agreement.getMatcherURL());
+
         configuration.logger.info(`Agreement ${agreement.id} created`);
 
         return agreement.sync();
@@ -75,6 +80,8 @@ export const createAgreement =
 
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implements AgreementOnChainProperties {
 
+    matcherOffChainProperties: MatcherOffchainProperties;
+    offChainProperties: AgreementOffChainProperties;
     propertiesDocumentHash: string;
     url: string;
     matcherPropertiesDocumentHash: string;
@@ -115,6 +122,14 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
             this.approvedBySupplyOwner = agreement._approvedBySupplyOwner;
             this.approvedByDemandOwner = agreement._approvedByDemandOwner;
             this.allowedMatcher = agreement._allowedMatcher;
+            this.offChainProperties = await this.getOffChainProperties(this.propertiesDocumentHash, this.getUrl());
+
+            this.matcherOffChainProperties =
+                await this.getOffChainProperties(this.matcherPropertiesDocumentHash, this.getMatcherURL());
+
+            if (this.configuration.logger) {
+                this.configuration.logger.verbose(`Agreement with ${this.id} synced`);
+            }
 
             this.initialized = true;
         }
@@ -147,4 +162,51 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
                 { from: this.configuration.blockchainProperties.activeUser.address });
         }
     }
+
+    async setMatcherProperties(matcherOffchainProperties: MatcherOffchainProperties): Promise<TransactionReceipt> {
+
+        const agreementPropsOnChain: AgreementOnChainProperties = {
+            matcherPropertiesDocumentHash: null,
+            matcherDBURL: null,
+            demandId: this.demandId,
+            supplyId: this.supplyId,
+            allowedMatcher: this.allowedMatcher,
+            propertiesDocumentHash: null,
+            url: null,
+        };
+
+        const matcherOffchainStorageProperties = this.prepareEntityCreation(
+            agreementPropsOnChain,
+            matcherOffchainProperties,
+            MatcherOffchainPropertiesSchema,
+            this.getMatcherURL());
+
+        let tx;
+
+        if (this.configuration.blockchainProperties.activeUser.privateKey) {
+            tx = await this.configuration.blockchainProperties.demandLogicInstance.setMatcherProperties(
+                this.id,
+                matcherOffchainStorageProperties.rootHash,
+                this.matcherDBURL,
+                { privateKey: this.configuration.blockchainProperties.activeUser.privateKey },
+            );
+
+        }
+        else {
+            tx = await this.configuration.blockchainProperties.demandLogicInstance.setMatcherProperties(
+                this.id,
+                matcherOffchainStorageProperties.rootHash,
+                this.matcherDBURL,
+                { from: this.configuration.blockchainProperties.activeUser.address });
+        }
+
+        await this.putToOffChainStorage(
+            matcherOffchainProperties,
+            matcherOffchainStorageProperties,
+            this.getMatcherURL());
+
+        return tx;
+
+    }
+
 }
