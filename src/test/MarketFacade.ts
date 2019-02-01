@@ -254,22 +254,35 @@ describe('Market-Facade', () => {
                 privateKey: assetOwnerPK,
             };
 
+            const supplyOffChainProperties: Market.Supply.SupplyOffchainProperties = {
+                price: 10,
+                currency: GeneralLib.Currency.USD,
+                availableWh: 10,
+                timeframe: GeneralLib.TimeFrame.hourly,
+            };
+
             const supplyProps: Market.Supply.SupplyOnChainProperties = {
-                url: 'abc',
-                propertiesDocumentHash: 'propDocHash',
+                url: null,
+                propertiesDocumentHash: null,
                 assetId: 0,
             };
 
-            const supply = await Market.Supply.createSupply(supplyProps, conf);
+            const supply = await Market.Supply.createSupply(supplyProps, supplyOffChainProperties, conf);
             delete supply.proofs;
             delete supply.configuration;
+            delete supply.propertiesDocumentHash;
 
             assert.deepEqual(supply as any, {
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'propDocHash',
-                url: 'abc',
+                url: 'http://localhost:3030/Supply',
                 assetId: '0',
+                offChainProperties: {
+                    availableWh: 10,
+                    currency: 1,
+                    price: 10,
+                    timeframe: 3,
+                },
             });
         });
 
@@ -279,14 +292,19 @@ describe('Market-Facade', () => {
 
             delete supply.proofs;
             delete supply.configuration;
+            delete supply.propertiesDocumentHash;
 
             assert.deepEqual(supply as any, {
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'propDocHash',
-                url: 'abc',
+                url: 'http://localhost:3030/Supply',
                 assetId: '0',
-
+                offChainProperties: {
+                    availableWh: 10,
+                    currency: 1,
+                    price: 10,
+                    timeframe: 3,
+                },
             });
         });
     });

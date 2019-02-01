@@ -1,8 +1,9 @@
 import * as GeneralLib from 'ew-utils-general-lib';
+import SupplyOffchainpropertiesSchema from '../../schemas/SupplyOffChainProperties.schema.json';
 
 export interface SupplyOffchainProperties {
     price: number;
-    currenty: GeneralLib.Currency;
+    currency: GeneralLib.Currency;
     availableWh: number;
     timeframe: GeneralLib.TimeFrame;
 
@@ -19,17 +20,20 @@ export const getSupplyListLength = async (configuration: GeneralLib.Configuratio
 
 export const createSupply =
     async (supplyPropertiesOnChain: SupplyOnChainProperties,
-        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
-        const demand = new Entity(null, configuration);
+           supplyPropertiesOffChain: SupplyOffchainProperties,
+           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+        const supply = new Entity(null, configuration);
 
-        /*
         const offChainStorageProperties =
-            demand.prepareEntityCreation(demandPropertiesOnChain, null, null);
-
+            supply.prepareEntityCreation(
+                supplyPropertiesOnChain,
+                supplyPropertiesOffChain,
+                SupplyOffchainpropertiesSchema,
+                supply.getUrl());
         if (configuration.offChainDataSource) {
-            demandPropertiesOnChain.url = demand.getUrl();
-            demandPropertiesOnChain.propertiesDocumentHash = offChainStorageProperties.rootHash;
-        }*/
+            supplyPropertiesOnChain.url = supply.getUrl();
+            supplyPropertiesOnChain.propertiesDocumentHash = offChainStorageProperties.rootHash;
+        }
 
         const tx = await configuration.blockchainProperties.marketLogicInstance.createSupply(
             supplyPropertiesOnChain.propertiesDocumentHash,
@@ -41,18 +45,19 @@ export const createSupply =
             },
         );
 
-        demand.id = configuration.blockchainProperties.web3.utils.hexToNumber(tx.logs[0].topics[1]).toString();
+        supply.id = configuration.blockchainProperties.web3.utils.hexToNumber(tx.logs[0].topics[1]).toString();
 
-        //    await demand.putToOffChainStorage(null, offChainStorageProperties);
+        await supply.putToOffChainStorage(supplyPropertiesOffChain, offChainStorageProperties);
 
-        configuration.logger.info(`Supply ${demand.id} created`);
+        configuration.logger.info(`Supply ${supply.id} created`);
 
-        return demand.sync();
+        return supply.sync();
 
     };
 
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implements SupplyOnChainProperties {
 
+    offChainProperties: SupplyOffchainProperties;
     propertiesDocumentHash: string;
     url: string;
 
@@ -79,7 +84,12 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implemen
             this.url = demand._documentDBURL;
             this.assetId = demand._assetId;
             this.initialized = true;
-            this.configuration.logger.verbose(`Supply ${this.id} synced`);
+
+            this.offChainProperties = await this.getOffChainProperties(this.propertiesDocumentHash);
+
+            if (this.configuration.logger) {
+                this.configuration.logger.verbose(`Supply ${this.id} synced`);
+            }
 
         }
         return this;
