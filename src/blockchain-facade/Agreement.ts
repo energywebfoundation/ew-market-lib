@@ -78,6 +78,16 @@ export const createAgreement =
 
     };
 
+export const getAgreementListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
+
+    return this.configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();
+
+};
+
+export const getAgreementAt;(index: number, configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+
+};
+
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implements AgreementOnChainProperties {
 
     matcherOffChainProperties: MatcherOffchainProperties;

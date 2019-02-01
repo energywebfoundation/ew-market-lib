@@ -17,19 +17,16 @@ export interface DemandOffchainproperties {
     registryCompliance?: GeneralLib.Compliance;
 }
 
-export interface DemandOnChainProperties extends GeneralLib.BlockchainDataModelEntity.OnChainProperties {
-    demandOwner: string;
-}
+export const getDemandListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
 
-export const getDemandListLength = async (configuration: GeneralLib.Configuration.Entity) => {
+    return this.configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();
 
-    return parseInt(await configuration.blockchainProperties.marketLogicInstance.getAllDemandListLength(), 10);
 };
 
 export const createDemand =
     async (demandPropertiesOnChain: DemandOnChainProperties,
-        demandPropertiesOffChain: DemandOffchainproperties,
-        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+           demandPropertiesOffChain: DemandOffchainproperties,
+           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const demand = new Entity(null, configuration);
 
         const offChainStorageProperties =

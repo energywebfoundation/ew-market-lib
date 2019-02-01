@@ -20,8 +20,8 @@ export const getSupplyListLength = async (configuration: GeneralLib.Configuratio
 
 export const createSupply =
     async (supplyPropertiesOnChain: SupplyOnChainProperties,
-        supplyPropertiesOffChain: SupplyOffchainProperties,
-        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+           supplyPropertiesOffChain: SupplyOffchainProperties,
+           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const supply = new Entity(null, configuration);
 
         const offChainStorageProperties =
