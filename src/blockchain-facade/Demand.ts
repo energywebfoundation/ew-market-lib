@@ -32,16 +32,12 @@ export const createDemand =
            configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const demand = new Entity(null, configuration);
 
-        console.log(demandPropertiesOnChain);
-
         const offChainStorageProperties =
             demand.prepareEntityCreation(
                 demandPropertiesOnChain,
                 demandPropertiesOffChain,
                 DemandOffchainpropertiesSchema,
-                demand.getUrl(), true);
-
-        console.log(offChainStorageProperties);
+                demand.getUrl());
 
         if (configuration.offChainDataSource) {
             demandPropertiesOnChain.url = demand.getUrl();

@@ -141,13 +141,29 @@ describe('Market-Facade', () => {
 
             delete demand.proofs;
             delete demand.configuration;
+            delete demand.propertiesDocumentHash;
 
-            assert.deepEqual(demand, {
+            assert.deepEqual((demand as any), {
                 id: '0',
                 initialized: true,
-                propertiesDocumentHash: 'propDocHash',
-                url: 'abc',
+                url: 'http://localhost:3030/Demand',
                 demandOwner: accountTrader,
+                offChainProperties: {
+                    assettype: 3,
+                    consumingAsset: 0,
+                    currency: 3,
+                    locationCountry: 'string',
+                    locationRegion: 'string',
+                    minCO2Offset: 10,
+                    otherGreenAttributes: 'string',
+                    pricePerCertifiedWh: 10,
+                    productingAsset: 0,
+                    registryCompliance: 2,
+                    targetWhPerPeriod: 10,
+                    timeframe: 3,
+                    typeOfPublicSupport: 'string',
+
+                },
             });
 
         });
@@ -177,7 +193,7 @@ describe('Market-Facade', () => {
                     productingAsset: 0,
                     registryCompliance: 2,
                     targetWhPerPeriod: 10,
-                    timeFrame: 3,
+                    timeframe: 3,
                     typeOfPublicSupport: 'string',
 
                 },
@@ -334,11 +350,12 @@ describe('Market-Facade', () => {
                     currentWh: 0,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: 1,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
             });
         });
@@ -372,6 +389,7 @@ describe('Market-Facade', () => {
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
             });
         });
@@ -408,11 +426,12 @@ describe('Market-Facade', () => {
                     currentWh: 0,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: 1,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
             });
         });
@@ -474,11 +493,12 @@ describe('Market-Facade', () => {
                     currentWh: 0,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: 1,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
 
             });
@@ -516,11 +536,12 @@ describe('Market-Facade', () => {
                     currentWh: 0,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: 1,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
 
             });
@@ -563,11 +584,12 @@ describe('Market-Facade', () => {
                     currentWh: 100,
                 },
                 offChainProperties: {
-                    currency: 'USD',
+                    currency: 1,
                     ende: startTime + 1000,
                     period: 10,
                     price: 10,
                     start: startTime,
+                    timeframe: 3,
                 },
 
             });
