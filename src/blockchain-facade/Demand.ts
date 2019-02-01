@@ -23,7 +23,7 @@ export interface DemandOnChainProperties extends GeneralLib.BlockchainDataModelE
 
 export const getDemandListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
 
-    return this.configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();
+    return configuration.blockchainProperties.marketLogicInstance.getAllDemandListLength();
 
 };
 

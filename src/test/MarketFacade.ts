@@ -136,8 +136,10 @@ describe('Market-Facade', () => {
                 demandOwner: conf.blockchainProperties.activeUser.address,
 
             };
+            assert.equal(await Market.Demand.getDemandListLength(conf), 0);
 
             const demand = await Market.Demand.createDemand(demandProps, demandOffchainProps, conf);
+            assert.equal(await Market.Demand.getDemandListLength(conf), 1);
 
             delete demand.proofs;
             delete demand.configuration;
@@ -267,7 +269,11 @@ describe('Market-Facade', () => {
                 assetId: 0,
             };
 
+            assert.equal(await Market.Supply.getSupplyListLength(conf), 0);
+
             const supply = await Market.Supply.createSupply(supplyProps, supplyOffChainProperties, conf);
+
+            assert.equal(await Market.Supply.getSupplyListLength(conf), 1);
             delete supply.proofs;
             delete supply.configuration;
             delete supply.propertiesDocumentHash;

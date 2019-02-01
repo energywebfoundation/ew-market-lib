@@ -13,9 +13,9 @@ export interface SupplyOnChainProperties extends GeneralLib.BlockchainDataModelE
     assetId: number;
 }
 
-export const getSupplyListLength = async (configuration: GeneralLib.Configuration.Entity) => {
+export const getSupplyListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
 
-    return parseInt(await configuration.blockchainProperties.marketLogicInstance.getAllDemandListLength(), 10);
+    return configuration.blockchainProperties.marketLogicInstance.getAllSupplyListLength();
 };
 
 export const createSupply =
