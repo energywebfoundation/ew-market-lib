@@ -1,5 +1,5 @@
 import * as GeneralLib from 'ew-utils-general-lib';
-import DemandOffchainpropertiesSchema from '../../schemas/DemandOffChainProperties.schema.json';
+import DemandOffchainpropertiesSchema from '../../schemas/DemandOffchainProperties.schema.json';
 
 export interface DemandOffchainproperties {
     timeframe: GeneralLib.TimeFrame;
@@ -28,8 +28,8 @@ export const getDemandListLength = async (configuration: GeneralLib.Configuratio
 
 export const createDemand =
     async (demandPropertiesOnChain: DemandOnChainProperties,
-           demandPropertiesOffChain: DemandOffchainproperties,
-           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+        demandPropertiesOffChain: DemandOffchainproperties,
+        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const demand = new Entity(null, configuration);
 
         const offChainStorageProperties =

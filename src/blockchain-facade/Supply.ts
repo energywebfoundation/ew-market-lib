@@ -1,5 +1,5 @@
 import * as GeneralLib from 'ew-utils-general-lib';
-import SupplyOffchainpropertiesSchema from '../../schemas/SupplyOffChainProperties.schema.json';
+import SupplyOffchainpropertiesSchema from '../../schemas/SupplyOffchainProperties.schema.json';
 
 export interface SupplyOffchainProperties {
     price: number;
@@ -20,8 +20,8 @@ export const getSupplyListLength = async (configuration: GeneralLib.Configuratio
 
 export const createSupply =
     async (supplyPropertiesOnChain: SupplyOnChainProperties,
-           supplyPropertiesOffChain: SupplyOffchainProperties,
-           configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
+        supplyPropertiesOffChain: SupplyOffchainProperties,
+        configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
         const supply = new Entity(null, configuration);
 
         const offChainStorageProperties =
