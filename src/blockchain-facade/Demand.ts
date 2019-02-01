@@ -17,6 +17,10 @@ export interface DemandOffchainproperties {
     registryCompliance?: GeneralLib.Compliance;
 }
 
+export interface DemandOnChainProperties extends GeneralLib.BlockchainDataModelEntity.OnChainProperties {
+    demandOwner: string;
+}
+
 export const getDemandListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
 
     return this.configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();

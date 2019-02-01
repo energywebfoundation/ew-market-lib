@@ -84,10 +84,6 @@ export const getAgreementListLength = async (configuration: GeneralLib.Configura
 
 };
 
-export const getAgreementAt;(index: number, configuration: GeneralLib.Configuration.Entity): Promise<Entity> => {
-
-};
-
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity implements AgreementOnChainProperties {
 
     matcherOffChainProperties: MatcherOffchainProperties;
