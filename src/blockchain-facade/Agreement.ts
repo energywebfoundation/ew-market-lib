@@ -80,7 +80,7 @@ export const createAgreement =
 
 export const getAgreementListLength = async (configuration: GeneralLib.Configuration.Entity): Promise<number> => {
 
-    return this.configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();
+    return configuration.blockchainProperties.marketLogicInstance.getAllAgreementListLength();
 
 };
 
