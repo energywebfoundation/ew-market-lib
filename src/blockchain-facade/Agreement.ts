@@ -92,8 +92,6 @@ export const createAgreement =
             configuration.logger.info(`Agreement ${agreement.id} created`);
         }
 
-
-
         return agreement.sync();
 
     };
