@@ -25,6 +25,7 @@ import { MarketContractLookup } from '../wrappedContracts/MarketContractLookup';
 import { MarketDB } from '../wrappedContracts/MarketDB';
 import { MarketLogic } from '../wrappedContracts/MarketLogic';
 import { MarketContractLookupJSON, MarketLogicJSON, MarketDBJSON } from '..';
+
 describe('MarketContractLookup', () => {
     const configFile = JSON.parse(
         fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8')
