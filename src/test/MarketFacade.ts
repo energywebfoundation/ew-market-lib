@@ -21,7 +21,7 @@ import 'mocha';
 import Web3 = require('web3');
 import * as GeneralLib from 'ew-utils-general-lib';
 import { logger } from '../Logger';
-import { UserContractLookup, UserLogic, migrateUserRegistryContracts } from 'ew-user-registry-lib';
+import { UserContractLookup, UserLogic, migrateUserRegistryContracts, buildRights, Role } from 'ew-user-registry-lib';
 import {
     migrateAssetRegistryContracts,
     AssetConsumingRegistryLogic,
@@ -83,15 +83,25 @@ describe('Market-Facade', () => {
         userLogic = new UserLogic(web3 as any, (userContracts as any).UserLogic);
         await userLogic.setUser(accountDeployment, 'admin', { privateKey: privateKeyDeployment });
 
-        await userLogic.setRoles(accountDeployment, 63, { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountDeployment, buildRights([
+            Role.UserAdmin,
+            Role.AssetAdmin,
+            Role.AssetManager,
+            Role.Trader,
+            Role.Matcher
+        ]), { privateKey: privateKeyDeployment });
 
         await userLogic.setUser(accountTrader, 'trader', { privateKey: privateKeyDeployment });
-        await userLogic.setRoles(accountTrader, 16, { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountTrader, buildRights([
+            Role.Trader
+        ]), { privateKey: privateKeyDeployment });
 
         await userLogic.setUser(assetOwnerAddress, 'assetOwner', {
             privateKey: privateKeyDeployment
         });
-        await userLogic.setRoles(assetOwnerAddress, 24, { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(assetOwnerAddress, buildRights([
+            Role.AssetManager
+        ]), { privateKey: privateKeyDeployment });
     });
 
     it('should deploy asset-registry contracts', async () => {

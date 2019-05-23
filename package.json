@@ -11,8 +11,8 @@
     "compile": "truffle compile",
     "deploy-contracts": "truffle migrate",
     "build": "npm run build-schemas && npm run build-ts",
-    "build-ts": "rm -rf dist/js && node_modules/typescript/bin/tsc",
-    "start-test-backend": "node node_modules/ew-utils-testbackend/index.js",
+    "build-ts": "rm -rf dist/js && tsc",
+    "start-test-backend": "node node_modules/ew-utils-testbackend/dist/js/src/index.js",
     "start-ganache": "ganache-cli -m 'chalk park staff buzz chair purchase wise oak receive avoid avoid home' -g 0 -l 80000000 -e 1000000 -a 20",
     "test": "npm run build && mocha dist/js/src/test/ --timeout 60000",
     "prebuild-schemas": "rm -rf dist/schemas && mkdir -p dist/schemas && rm -rf schemas && mkdir schemas",
@@ -24,7 +24,7 @@
     "prettier": "prettier --write --config-precedence file-override './src/**/*'",
     "lint": "solium -d contracts && tslint 'src/**/*{.ts,.tsx}'",
     "lint-fix": "solium -d contracts --fix && tslint --fix 'src/**/*{.ts,.tsx}'",
-    "prepublish": "npm run compile && npm run build"
+    "prepare": "node scripts/build.js"
   },
   "repository": {
     "type": "git",
@@ -35,16 +35,20 @@
   },
   "homepage": "https://github.com/energywebfoundation/ew-market-lib#readme",
   "dependencies": {
+    "ew-asset-registry-lib": "energywebfoundation/ew-asset-registry-lib#71637c384a2d1075001ff44a26d9926e96674167",
+    "ew-user-registry-lib": "energywebfoundation/ew-user-registry-lib#5a41bd1197b73aa70db2f9a33b5332c04c505c3d",
+    "ew-utils-general-lib": "energywebfoundation/ew-utils-general-lib#3a0cb9e58c2f18776b59771d39981a44d6640d96",
+    "ew-utils-testbackend": "energywebfoundation/ew-utils-testbackend#f4448692bebfe5019570533114557a943319ff2d",
+    "web3": "1.0.0-beta.37",
+    "winston": "3.2.1"
+  },
+  "devDependencies": {
     "@types/chai": "4.1.7",
     "@types/mocha": "2.2.48",
     "@types/node": "9.6.48",
     "@types/web3": "1.0.14",
     "chai": "4.2.0",
     "ethlint": "1.2.4",
-    "ew-asset-registry-lib": "1.0.2",
-    "ew-user-registry-lib": "1.0.2",
-    "ew-utils-general-lib": "1.0.1",
-    "ew-utils-testbackend": "0.0.99",
     "fs-extra": "8.0.1",
     "ganache-cli": "6.4.3",
     "lint-staged": "8.1.7",
@@ -56,12 +60,7 @@
     "tslint-lines-between-class-members": "1.3.1",
     "tslint-sonarts": "1.9.0",
     "typescript": "2.9.2",
-    "typescript-json-schema": "0.31.0",
-    "web3": "1.0.0-beta.37",
-    "winston": "3.2.1"
-  },
-  "bin": {
-    "ew-market-lib-build": "./scripts/build.js"
+    "typescript-json-schema": "0.31.0"
   },
   "postinstall": "rm -f node_modules/web3/index.d.ts",
   "lint-staged": {
@@ -70,5 +69,9 @@
       "prettier --write --config ./.prettierrc --config-precedence file-override",
       "git add"
     ]
-  }
+  },
+  "files": [
+    "contracts",
+    "dist"
+  ]
 }

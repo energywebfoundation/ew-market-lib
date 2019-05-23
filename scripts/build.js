@@ -47,19 +47,29 @@ async function executeCommand(command, directory) {
 }
 
 async function run() {
-  console.log('MARKET_LIB_BUILD: Start...');
+  console.log('EW-MARKET-LIB-BUILD: Start...');
 
-  await executeCommand('npx ew-market-contracts-build', ROOT_DIRECTORY)
+  await executeCommand('npm run compile', ROOT_DIRECTORY)
+
+  await fs.ensureDir(`${ROOT_DIRECTORY}/dist/js`);
+
   await executeCommand('npm run build', ROOT_DIRECTORY)
 
   if (!(await fs.pathExists(`${ROOT_DIRECTORY}/dist/js/src`))) {
     await fs.move(`${ROOT_DIRECTORY}/dist/js`, `${ROOT_DIRECTORY}/dist/js-temp`);
     await fs.ensureDir(`${ROOT_DIRECTORY}/dist/js`);
     await fs.move(`${ROOT_DIRECTORY}/dist/js-temp`, `${ROOT_DIRECTORY}/dist/js/src`);
+  }
+
+  if (!(await fs.pathExists(`${ROOT_DIRECTORY}/dist/js/build`))) {
+    await fs.move(`${ROOT_DIRECTORY}/build`, `${ROOT_DIRECTORY}/dist/js/build`);
+  }
+
+  if (!(await fs.pathExists(`${ROOT_DIRECTORY}/dist/js/schemas`))) {
     await fs.move(`${ROOT_DIRECTORY}/schemas`, `${ROOT_DIRECTORY}/dist/js/schemas`);
   }
 
-  console.log('MARKET_LIB_BUILD: End');
+  console.log('MARKET-LIB-BUILD: End');
 }
 
 run();

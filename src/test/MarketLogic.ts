@@ -18,7 +18,7 @@ import { assert } from 'chai';
 import * as fs from 'fs';
 import 'mocha';
 import Web3 from 'web3';
-import { migrateUserRegistryContracts, UserLogic, UserContractLookup } from 'ew-user-registry-lib';
+import { migrateUserRegistryContracts, UserLogic, UserContractLookup, buildRights, Role } from 'ew-user-registry-lib';
 import {
     migrateAssetRegistryContracts,
     AssetContractLookup,
@@ -90,28 +90,27 @@ describe('MarketLogic', () => {
             web3,
             (assetContracts as any).AssetProducingRegistryLogic
         );
-        Object.keys(marketContracts).forEach(async key => {
+        for (let key of Object.keys(marketContracts)) {
             let tempBytecode;
             if (key.includes('MarketContractLookup')) {
                 marketRegistryContract = new MarketContractLookup(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketContractLookupJSON.deployedBytecode;
+                tempBytecode = MarketContractLookupJSON.deployedBytecode;
             }
 
             if (key.includes('MarketLogic')) {
                 marketLogic = new MarketLogic(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketLogicJSON.deployedBytecode;
+                tempBytecode = MarketLogicJSON.deployedBytecode;
             }
 
             if (key.includes('MarketDB')) {
                 marketDB = new MarketDB(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketDBJSON.deployedBytecode;
+                tempBytecode = MarketDBJSON.deployedBytecode;
             }
             const deployedBytecode = await web3.eth.getCode(marketContracts[key]);
             assert.isTrue(deployedBytecode.length > 0);
 
-            // const tempBytecode = '0x' + contractInfo.deployedBytecode;
             assert.equal(deployedBytecode, tempBytecode);
-        });
+        }
     });
 
     it('should have the right owner', async () => {
@@ -211,8 +210,12 @@ describe('MarketLogic', () => {
             privateKey: privateKeyDeployment
         });
 
-        await userLogic.setRoles(accountTrader, 16, { privateKey: privateKeyDeployment });
-        await userLogic.setRoles(accountAssetOwner, 8, { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountTrader, buildRights([
+            Role.Trader
+        ]), { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountAssetOwner, buildRights([
+            Role.AssetManager
+        ]), { privateKey: privateKeyDeployment });
     });
 
     it('should fail when trying to create a demand as assetOwner', async () => {

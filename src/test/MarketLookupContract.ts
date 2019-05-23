@@ -18,7 +18,7 @@ import { assert } from 'chai';
 import * as fs from 'fs';
 import 'mocha';
 import Web3 from 'web3';
-import { migrateUserRegistryContracts, UserLogic } from 'ew-user-registry-lib';
+import { migrateUserRegistryContracts, UserLogic, buildRights, Role } from 'ew-user-registry-lib';
 import { migrateAssetRegistryContracts, AssetContractLookup } from 'ew-asset-registry-lib';
 import { migrateMarketRegistryContracts } from '../utils/migrateContracts';
 import { MarketContractLookup } from '../wrappedContracts/MarketContractLookup';
@@ -53,7 +53,10 @@ describe('MarketContractLookup', () => {
 
         await userLogic.setUser(accountDeployment, 'admin', { privateKey: privateKeyDeployment });
 
-        await userLogic.setRoles(accountDeployment, 3, { privateKey: privateKeyDeployment });
+        await userLogic.setRoles(accountDeployment, buildRights([
+            Role.UserAdmin,
+            Role.AssetAdmin
+        ]), { privateKey: privateKeyDeployment });
 
         const userContractLookupAddr = (userContracts as any).UserContractLookup;
 
@@ -73,28 +76,27 @@ describe('MarketContractLookup', () => {
 
         assetRegistryContract = new AssetContractLookup(web3 as any, assetRegistryLookupAddr);
 
-        Object.keys(marketContracts).forEach(async key => {
+        for (let key of Object.keys(marketContracts)) {
             let tempBytecode;
             if (key.includes('MarketContractLookup')) {
                 marketRegistryContract = new MarketContractLookup(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketContractLookupJSON.deployedBytecode;
+                tempBytecode = MarketContractLookupJSON.deployedBytecode;
             }
 
             if (key.includes('MarketLogic')) {
                 marketLogic = new MarketLogic(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketLogicJSON.deployedBytecode;
+                tempBytecode = MarketLogicJSON.deployedBytecode;
             }
 
             if (key.includes('MarketDB')) {
                 marketDB = new MarketDB(web3, marketContracts[key]);
-                tempBytecode = '0x' + MarketDBJSON.deployedBytecode;
+                tempBytecode = MarketDBJSON.deployedBytecode;
             }
             const deployedBytecode = await web3.eth.getCode(marketContracts[key]);
             assert.isTrue(deployedBytecode.length > 0);
 
-            // const tempBytecode = '0x' + contractInfo.deployedBytecode;
             assert.equal(deployedBytecode, tempBytecode);
-        });
+        }
     });
 
     it('should have the right owner', async () => {
