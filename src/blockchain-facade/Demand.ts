@@ -15,7 +15,7 @@
 // @authors: slock.it GmbH; Martin Kuechler, martin.kuchler@slock.it; Heiko Burkhardt, heiko.burkhardt@slock.it
 
 import * as GeneralLib from 'ew-utils-general-lib';
-import DemandOffChainPropertiesSchema from '../../schemas/DemandOffchainProperties.schema.json';
+import DemandOffChainPropertiesSchema from '../../schemas/DemandOffChainProperties.schema.json';
 
 export interface IDemandOffChainProperties {
     timeframe: GeneralLib.TimeFrame;
