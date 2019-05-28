@@ -15,7 +15,7 @@
 // @authors: slock.it GmbH; Martin Kuechler, martin.kuchler@slock.it; Heiko Burkhardt, heiko.burkhardt@slock.it
 
 import * as GeneralLib from 'ew-utils-general-lib';
-import DemandOffchainpropertiesSchema from '../../schemas/DemandOffchainProperties.schema.json';
+import DemandOffChainPropertiesSchema from '../../schemas/DemandOffchainProperties.schema.json';
 
 export interface IDemandOffChainProperties {
     timeframe: GeneralLib.TimeFrame;
@@ -54,7 +54,7 @@ export const createDemand = async (
     const offChainStorageProperties = demand.prepareEntityCreation(
         demandPropertiesOnChain,
         demandPropertiesOffChain,
-        DemandOffchainpropertiesSchema,
+        DemandOffChainPropertiesSchema,
         demand.getUrl()
     );
 
