@@ -26,6 +26,7 @@ contract MarketLogic is AgreementLogic {
 
     event createdNewDemand(address _sender, uint indexed _demandId);
     event createdNewSupply(address _sender, uint indexed _supplyId);
+    event deletedDemand(address _sender, uint indexed _demandId);
 
     /// @notice constructor
     constructor(
@@ -50,6 +51,17 @@ contract MarketLogic is AgreementLogic {
      {
         uint demandID = db.createDemand(_propertiesDocumentHash, _documentDBURL, msg.sender);
         emit createdNewDemand(msg.sender, demandID);
+    }
+
+    /// @notice Deletes the demand on a specific index
+	/// @dev will return an event with the event-Id
+	/// @param _demandId index of the demand in the allDemands-array
+    function deleteDemand(uint _demandId)
+        external
+        onlyRole(RoleManagement.Role.Trader)
+    {
+        db.deleteDemand(_demandId);
+        emit deletedDemand(msg.sender, _demandId);
     }
 
 	/// @notice Function to create a supply

@@ -29,6 +29,9 @@ import { MarketContractLookup } from '../wrappedContracts/MarketContractLookup';
 import { MarketDB } from '../wrappedContracts/MarketDB';
 import { MarketLogic } from '../wrappedContracts/MarketLogic';
 import { MarketContractLookupJSON, MarketLogicJSON, MarketDBJSON } from '..';
+
+const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
+
 describe('MarketLogic', () => {
     const configFile = JSON.parse(
         fs.readFileSync(process.cwd() + '/connection-config.json', 'utf8')
@@ -237,7 +240,7 @@ describe('MarketLogic', () => {
             privateKey: traderPK
         });
 
-        const allEvents = await marketLogic.getAllcreatedNewDemandEvents({
+        const allEvents = await marketLogic.getEvents('createdNewDemand', {
             fromBlock: tx.blockNumber,
             toBlock: tx.blockNumber
         });
@@ -362,7 +365,7 @@ describe('MarketLogic', () => {
             privateKey: assetOwnerPK
         });
 
-        const allEvents = await marketLogic.getAllcreatedNewSupplyEvents({
+        const allEvents = await marketLogic.getEvents('createdNewSupply', {
             fromBlock: tx.blockNumber,
             toBlock: tx.blockNumber
         });
@@ -601,7 +604,7 @@ describe('MarketLogic', () => {
         );
 
         if (isGanache) {
-            const allEvents = await marketLogic.getAllLogAgreementCreatedEvents({
+            const allEvents = await marketLogic.getEvents('LogAgreementCreated', {
                 fromBlock: tx.blockNumber,
                 toBlock: tx.blockNumber
             });
@@ -683,7 +686,7 @@ describe('MarketLogic', () => {
         const tx = await marketLogic.approveAgreementDemand(0, { privateKey: traderPK });
 
         if (isGanache) {
-            const allEvents = await marketLogic.getAllLogAgreementFullySignedEvents({
+            const allEvents = await marketLogic.getEvents('LogAgreementFullySigned', {
                 fromBlock: tx.blockNumber,
                 toBlock: tx.blockNumber
             });
@@ -780,7 +783,7 @@ describe('MarketLogic', () => {
             { privateKey: assetOwnerPK }
         );
 
-        const allEvents = await marketLogic.getAllcreatedNewSupplyEvents({
+        const allEvents = await marketLogic.getEvents('createdNewSupply', {
             fromBlock: tx.blockNumber,
             toBlock: tx.blockNumber
         });
@@ -803,7 +806,7 @@ describe('MarketLogic', () => {
         });
 
         if (isGanache) {
-            const allEvents = await marketLogic.getAllcreatedNewDemandEvents({
+            const allEvents = await marketLogic.getEvents('createdNewDemand', {
                 fromBlock: tx.blockNumber,
                 toBlock: tx.blockNumber
             });
@@ -833,7 +836,7 @@ describe('MarketLogic', () => {
         );
 
         if (isGanache) {
-            const allEvents = await marketLogic.getAllLogAgreementCreatedEvents({
+            const allEvents = await marketLogic.getEvents('LogAgreementCreated', {
                 fromBlock: tx.blockNumber,
                 toBlock: tx.blockNumber
             });
@@ -911,7 +914,7 @@ describe('MarketLogic', () => {
         const tx = await marketLogic.approveAgreementSupply(1, { privateKey: assetOwnerPK });
 
         if (isGanache) {
-            const allEvents = await marketLogic.getAllLogAgreementFullySignedEvents({
+            const allEvents = await marketLogic.getEvents('LogAgreementFullySigned', {
                 fromBlock: tx.blockNumber,
                 toBlock: tx.blockNumber
             });
@@ -974,7 +977,7 @@ describe('MarketLogic', () => {
             { privateKey: traderPK }
         );
 
-        const allEvents = await marketLogic.getAllLogAgreementCreatedEvents({
+        const allEvents = await marketLogic.getEvents('LogAgreementCreated', {
             fromBlock: tx.blockNumber,
             toBlock: tx.blockNumber
         });
@@ -1048,7 +1051,7 @@ describe('MarketLogic', () => {
             { privateKey: assetOwnerPK }
         );
 
-        const allEvents = await marketLogic.getAllLogAgreementCreatedEvents({
+        const allEvents = await marketLogic.getEvents('LogAgreementCreated', {
             fromBlock: tx.blockNumber,
             toBlock: tx.blockNumber
         });
@@ -1078,5 +1081,35 @@ describe('MarketLogic', () => {
         }
 
         assert.isTrue(failed);
+    });
+
+    it('should be able to delete a demand as trader', async () => {
+        await marketLogic.createDemand('propertiesDocumentHash_deleted', 'documentDBURL_deleted', {
+            privateKey: traderPK
+        });
+        assert.equal(await marketLogic.getAllDemandListLength(), 3);
+
+        const txDelete = await marketLogic.deleteDemand(1, {
+            privateKey: traderPK
+        });
+
+        const allEvents = await marketLogic.getEvents('deletedDemand', {
+            fromBlock: txDelete.blockNumber,
+            toBlock: txDelete.blockNumber
+        });
+        assert.equal(allEvents.length, 1);
+
+        const demandAfter = await marketLogic.getDemand(1);
+        assert.deepEqual(demandAfter, {
+            0: '',
+            1: '',
+            2: ZERO_ADDR,
+            _propertiesDocumentHash: '',
+            _documentDBURL: '',
+            _owner: ZERO_ADDR
+        });
+
+        // Demand list length should remain the same, because the elements in Solidity are not automatically shifted
+        assert.equal(await marketLogic.getAllDemandListLength(), 3);
     });
 });
