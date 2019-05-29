@@ -248,10 +248,6 @@ export class MarketLogic extends GeneralFunctions {
         return await this.web3Contract.methods.getDemand(_demandId).call(txParams);
     }
 
-    // async deleteDemand(_demandId: number, txParams?: SpecialTx) {
-    //     return await this.web3Contract.methods.deleteDemand(_demandId).call(txParams);
-    // }
-
     async deleteDemand(
         _demandId: number,
         txParams?: SpecialTx
