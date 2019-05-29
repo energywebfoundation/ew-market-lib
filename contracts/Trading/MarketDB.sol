@@ -71,7 +71,6 @@ contract MarketDB is AgreementDB {
 
     /// @notice Deletes a demand
 	/// @param _demandId the demand ID
-	/// @return the demand-id
     function deleteDemand (uint _demandId)
         external
         onlyOwner
