@@ -60,6 +60,9 @@ contract MarketLogic is AgreementLogic {
         external
         onlyRole(RoleManagement.Role.Trader)
     {
+        MarketDB.Demand memory demand = db.getDemand(_demandId);
+        require(msg.sender == demand.demandOwner, "user is not the owner of this demand");
+
         db.deleteDemand(_demandId);
         emit deletedDemand(msg.sender, _demandId);
     }
