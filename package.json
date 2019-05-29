@@ -21,6 +21,7 @@
     "build-schema:SupplyPropertiesOffChain": "typescript-json-schema --ignoreErrors --required src/blockchain-facade/Supply.ts SupplyOffchainProperties > schemas/SupplyOffchainProperties.schema.json",
     "build-schema:AgreementPropertiesOffChain": "typescript-json-schema --ignoreErrors --required src/blockchain-facade/Agreement.ts AgreementOffChainProperties > schemas/AgreementOffChainProperties.schema.json",
     "build-schema:MatcherPropertiesOffChain": "typescript-json-schema --ignoreErrors --required src/blockchain-facade/Agreement.ts MatcherOffchainProperties > schemas/MatcherOffchainProperties.schema.json",
+    "flatten-contracts": "truffle-flattener contracts/**/* contracts/MarketContractLookup.sol > build/flattenedContracts.sol && node scripts/removeExperimentalDuplicates.js build/flattenedContracts.sol",
     "prettier": "prettier --write --config-precedence file-override './src/**/*'",
     "lint": "solium -d contracts && tslint 'src/**/*{.ts,.tsx}'",
     "lint-fix": "solium -d contracts --fix && tslint --fix 'src/**/*{.ts,.tsx}'",
