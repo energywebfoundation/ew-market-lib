@@ -200,7 +200,6 @@ describe('Market-Facade', () => {
 
         it('should return 1 demand for getAllDemands', async () => {
             const allDemands = await Market.Demand.getAllDemands(conf);
-            console.log({allDemands});
             assert.equal(allDemands.length, 1);
         });
 
@@ -677,7 +676,6 @@ describe('Market-Facade', () => {
 
         it('should get all demands even after a demand is deleted', async () => {
             const allDemands = await Market.Demand.getAllDemands(conf);
-            console.log(allDemands);
             assert.equal(allDemands.length, 0);
         });
     });
