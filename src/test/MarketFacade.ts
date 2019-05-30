@@ -652,5 +652,27 @@ describe('Market-Facade', () => {
                 }
             });
         });
+
+        it('should delete a demand', async () => {
+            conf.blockchainProperties.activeUser = {
+                address: accountTrader,
+                privateKey: traderPK
+            };
+
+            assert.equal(await Market.Demand.getDemandListLength(conf), 1);
+
+            const deleted = await Market.Demand.deleteDemand(0, conf);
+
+            assert.isTrue(deleted);
+            
+            // Should remain the same 
+            assert.equal(await Market.Demand.getDemandListLength(conf), 1);
+        });
+
+        it('should get all demands even after a demand is deleted', async () => {
+            const allDemands = await Market.Demand.getAllDemands(conf);
+            console.log(allDemands);
+            assert.equal(allDemands.length, 0);
+        });
     });
 });

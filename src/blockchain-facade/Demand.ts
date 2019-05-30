@@ -85,6 +85,31 @@ export const createDemand = async (
     return demand.sync();
 };
 
+export const deleteDemand = async (
+    demandId: number,
+    configuration: GeneralLib.Configuration.Entity
+): Promise<boolean> => {
+    let success = true;
+    try {
+        await configuration.blockchainProperties.marketLogicInstance.deleteDemand(
+            demandId,
+            {
+                from: configuration.blockchainProperties.activeUser.address,
+                privateKey: configuration.blockchainProperties.activeUser.privateKey
+            }
+        );
+    } catch (e) {
+        success = false;
+        throw e;
+    }
+
+    if (configuration.logger) {
+        configuration.logger.info(`Demand ${demandId} deleted`);
+    }
+
+    return success;
+};
+
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
     implements IDemandOnChainProperties {
     offChainProperties: IDemandOffChainProperties;
