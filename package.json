@@ -14,7 +14,7 @@
     "build-ts": "rm -rf dist/js && tsc",
     "start-test-backend": "node node_modules/ew-utils-testbackend/dist/js/src/index.js",
     "start-ganache": "ganache-cli -m 'chalk park staff buzz chair purchase wise oak receive avoid avoid home' -g 0 -l 80000000 -e 1000000 -a 20",
-    "test": "npm run build && mocha dist/js/src/test/MarketFacade --timeout 60000",
+    "test": "npm run build && mocha dist/js/src/test/ --timeout 60000",
     "prebuild-schemas": "rm -rf dist/schemas && mkdir -p dist/schemas && rm -rf schemas && mkdir schemas",
     "build-schemas": "npm run build-schema:AgreementPropertiesOffChain && npm run build-schema:MatcherPropertiesOffChain && npm run build-schema:DemandPropertiesOffChain && npm run build-schema:SupplyPropertiesOffChain && cp -R schemas dist/schemas",
     "build-schema:DemandPropertiesOffChain": "typescript-json-schema --ignoreErrors --required src/blockchain-facade/Demand.ts IDemandOffChainProperties > schemas/DemandOffChainProperties.schema.json",
