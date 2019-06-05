@@ -355,6 +355,11 @@ describe('Market-Facade', () => {
                 }
             });
         });
+
+        it('should get all supplies', async () => {
+            const allSupplies = await Market.Supply.getAllSupplies(conf);
+            assert.equal(allSupplies.length, 1);
+        });
     });
 
     describe('Agreement-Facade', () => {

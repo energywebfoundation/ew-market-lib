@@ -117,7 +117,7 @@ export const getAllAgreements = async (configuration: GeneralLib.Configuration.E
         .fill(null)
         .map((item, index) => (new Entity(index.toString(), configuration)).sync());
 
-    return (await Promise.all(agreementsPromises));
+    return (await Promise.all(agreementsPromises)).filter(promise => promise.initialized);
 };
 
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
