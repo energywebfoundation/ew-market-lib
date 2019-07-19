@@ -131,9 +131,10 @@ export class GeneralFunctions {
 
     async buildTransactionParams(method, params): Promise<ITxParams> {
         let gas;
-        params.data = await method.encodeABI();
 
         if (params) {
+            params.data = await method.encodeABI();
+
             if (params.privateKey) {
                 const privateKey = params.privateKey.startsWith('0x')
                     ? params.privateKey

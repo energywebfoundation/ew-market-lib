@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/energywebfoundation/ew-market-lib#readme",
   "dependencies": {
-    "ew-asset-registry-lib": "energywebfoundation/ew-asset-registry-lib#bb77a5728748f827314af30115e27449cfdbf5f9",
-    "ew-user-registry-lib": "energywebfoundation/ew-user-registry-lib#4127bc19acbea7bb84abbb8c053b359d2575a66e",
+    "ew-asset-registry-lib": "energywebfoundation/ew-asset-registry-lib#2c60ebae4b931fc84734cec437066e4057a45c92",
+    "ew-user-registry-lib": "energywebfoundation/ew-user-registry-lib#b9ad72196531d56995e1ad0509f58ca8f9aab053",
     "ew-utils-general-lib": "1.0.2-alpha.4",
     "web3": "1.0.0-beta.37",
     "winston": "3.2.1"
