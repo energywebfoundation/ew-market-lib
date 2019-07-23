@@ -73,6 +73,9 @@ export const createDemand = async (
             privateKey: configuration.blockchainProperties.activeUser.privateKey
         }
     );
+    console.log({
+        tx
+    });
 
     demand.id = configuration.blockchainProperties.web3.utils
         .hexToNumber(tx.logs[0].topics[1])
