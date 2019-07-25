@@ -20,7 +20,7 @@ import DemandOffChainPropertiesSchema from '../../schemas/DemandOffChainProperti
 export interface IDemandOffChainProperties {
     timeframe: GeneralLib.TimeFrame;
     maxPricePerMwh: number;
-    currency: GeneralLib.Currency;
+    currency: GeneralLib.Currency | string;
     productingAsset?: number;
     consumingAsset?: number;
     locationCountry?: string;
