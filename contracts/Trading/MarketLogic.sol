@@ -67,20 +67,18 @@ contract MarketLogic is AgreementLogic {
         emit deletedDemand(msg.sender, _demandId);
     }
 
-	/// @notice Function to create a supply
-	/// @dev will return an event with the event-Id
-	/// @param _propertiesDocumentHash document-hash with all the properties of the demand
-	/// @param _documentDBURL url-address of the demand
-	/// @param _assetId the asset Id
     function createSupply(
-        string calldata _propertiesDocumentHash,
-        string calldata _documentDBURL,
-        uint _assetId
+        uint _assetId,
+        uint _price,
+        uint _currency,
+        uint _availableWh,
+        string calldata _startTime,
+        string calldata _endTime
     )
         external
      {
         require(AssetGeneralInterface(assetContractLookup.assetProducingRegistry()).getAssetOwner(_assetId) == msg.sender, "wrong msg.sender");
-        uint supplyID = db.createSupply(_propertiesDocumentHash, _documentDBURL, _assetId);
+        uint supplyID = db.createSupply(_assetId, _price, _currency, _availableWh, _startTime, _endTime);
         emit createdNewSupply(msg.sender, supplyID);
     }
 
@@ -121,15 +119,22 @@ contract MarketLogic is AgreementLogic {
         external
         view
         returns (
-            string memory _propertiesDocumentHash,
-            string memory _documentDBURL,
-            uint _assetId
+            uint _assetId,
+            uint _price,
+            uint _currency,
+            uint _availableWh,
+            string memory _startTime,
+            string memory _endTime
         )
     {
         MarketDB.Supply memory supply = db.getSupply(_supplyId);
-        _propertiesDocumentHash = supply.propertiesDocumentHash;
-        _documentDBURL = supply.documentDBURL;
+
         _assetId = supply.assetId;
+        _price = supply.price;
+        _currency = supply.currency;
+        _availableWh = supply.availableWh;
+        _startTime = supply.startTime;
+        _endTime = supply.endTime;
     }
 
 }

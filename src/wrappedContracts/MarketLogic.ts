@@ -116,12 +116,21 @@ export class MarketLogic extends GeneralFunctions {
     }
 
     async createSupply(
-        _propertiesDocumentHash: string,
-        _documentDBURL: string,
         _assetId: number,
+        _price: number,
+        _currency: number,
+        _availableWh: number,
+        _startTime: string,
+        _endTime: string,
         txParams?: SpecialTx
     ) {
-        const method = this.web3Contract.methods.createSupply(_propertiesDocumentHash, _documentDBURL, _assetId);
+        const method = this.web3Contract.methods.createSupply(_assetId,
+            _price,
+            _currency,
+            _availableWh,
+            _startTime,
+            _endTime
+        );
         const transactionParams = await this.buildTransactionParams(method, txParams);
 
         return await this.send(method, transactionParams);

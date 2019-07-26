@@ -15,20 +15,15 @@
 // @authors: slock.it GmbH; Martin Kuechler, martin.kuchler@slock.it; Heiko Burkhardt, heiko.burkhardt@slock.it
 
 import * as GeneralLib from 'ew-utils-general-lib';
-import SupplyOffchainpropertiesSchema from '../../schemas/SupplyOffchainProperties.schema.json';
-
-export interface ISupplyOffchainProperties {
-    price: number;
-    currency: GeneralLib.Currency;
-    availableWh: number;
-    timeframe: GeneralLib.TimeFrame;
-    startTime: string;
-    endTime: string;
-}
 
 export interface ISupplyOnChainProperties
     extends GeneralLib.BlockchainDataModelEntity.IOnChainProperties {
     assetId: number;
+    price: number;
+    currency: GeneralLib.Currency;
+    availableWh: number;
+    startTime: string;
+    endTime: string;
 }
 
 export const getSupplyListLength = async (configuration: GeneralLib.Configuration.Entity) => {
@@ -45,25 +40,12 @@ export const getAllSupplies = async (configuration: GeneralLib.Configuration.Ent
 
 export const createSupply = async (
     supplyPropertiesOnChain: ISupplyOnChainProperties,
-    supplyPropertiesOffChain: ISupplyOffchainProperties,
     configuration: GeneralLib.Configuration.Entity
 ): Promise<Entity> => {
     const supply = new Entity(null, configuration);
 
-    const offChainStorageProperties = supply.prepareEntityCreation(
-        supplyPropertiesOnChain,
-        supplyPropertiesOffChain,
-        SupplyOffchainpropertiesSchema,
-        supply.getUrl()
-    );
-    if (configuration.offChainDataSource) {
-        supplyPropertiesOnChain.url = supply.getUrl();
-        supplyPropertiesOnChain.propertiesDocumentHash = offChainStorageProperties.rootHash;
-    }
 
     const tx = await configuration.blockchainProperties.marketLogicInstance.createSupply(
-        supplyPropertiesOnChain.propertiesDocumentHash,
-        supplyPropertiesOnChain.url,
         supplyPropertiesOnChain.assetId,
         {
             from: configuration.blockchainProperties.activeUser.address,
@@ -75,8 +57,6 @@ export const createSupply = async (
         .hexToNumber(tx.logs[0].topics[1])
         .toString();
 
-    await supply.putToOffChainStorage(supplyPropertiesOffChain, offChainStorageProperties);
-
     if (configuration.logger) {
         configuration.logger.info(`Supply ${supply.id} created`);
     }
@@ -86,11 +66,15 @@ export const createSupply = async (
 
 export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
     implements ISupplyOnChainProperties {
-    offChainProperties: ISupplyOffchainProperties;
     propertiesDocumentHash: string;
     url: string;
 
     assetId: number;
+    price: number;
+    currency: GeneralLib.Currency;
+    availableWh: number;
+    startTime: string;
+    endTime: string;
 
     initialized: boolean;
     configuration: GeneralLib.Configuration.Entity;
@@ -107,16 +91,17 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
 
     async sync(): Promise<Entity> {
         if (this.id != null) {
-            const demand = await this.configuration.blockchainProperties.marketLogicInstance.getSupply(
+            const supply = await this.configuration.blockchainProperties.marketLogicInstance.getSupply(
                 this.id
             );
 
-            this.propertiesDocumentHash = demand._propertiesDocumentHash;
-            this.url = demand._documentDBURL;
-            this.assetId = demand._assetId;
+            this.assetId = supply._assetId;
+            this.price = supply._price;
+            this.currency = supply._currency;
+            this.availableWh = supply._availableWh;
+            this.startTime = supply._startTime;
+            this.endTime = supply._endTime;
             this.initialized = true;
-
-            this.offChainProperties = await this.getOffChainProperties(this.propertiesDocumentHash);
 
             if (this.configuration.logger) {
                 this.configuration.logger.verbose(`Supply ${this.id} synced`);

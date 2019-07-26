@@ -31,9 +31,12 @@ contract MarketDB is AgreementDB {
     }
 
     struct Supply {
-        string propertiesDocumentHash;
-        string documentDBURL;
         uint assetId;
+        uint price;
+        uint currency;
+        uint availableWh;
+        string startTime;
+        string endTime;
     }
 
     /// @notice list with all created demands
@@ -78,25 +81,26 @@ contract MarketDB is AgreementDB {
         delete allDemands[_demandId];
     }
 
-	/// @notice creates a supply
-	/// @param _propertiesDocumentHash the properties document hash
-	/// @param _documentDBURL the url of the document in a database
-	/// @param _assetId the asset Id
-	/// @return the supply-id
     function createSupply
     (
-        string calldata _propertiesDocumentHash,
-        string calldata _documentDBURL,
-        uint _assetId
+        uint _assetId,
+        uint _price,
+        uint _currency,
+        uint _availableWh,
+        string calldata _startTime,
+        string calldata _endTime
     )
         external
         onlyOwner
         returns (uint _supplyId)
     {
         allSupply.push(Supply({
-            propertiesDocumentHash: _propertiesDocumentHash,
-            documentDBURL: _documentDBURL,
-            assetId: _assetId
+            assetId: _assetId,
+            price: _price,
+            currency: _currency,
+            availableWh: _availableWh,
+            startTime: _startTime,
+            endTime: _endTime
         }));
         _supplyId = allSupply.length>0?allSupply.length-1:0;
     }
