@@ -24,6 +24,7 @@ export interface ISupplyOnChainProperties
     availableWh: number;
     startTime: string;
     endTime: string;
+    matchedPower: number;
 }
 
 export const getSupplyListLength = async (configuration: GeneralLib.Configuration.Entity) => {
@@ -80,6 +81,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
     availableWh: number;
     startTime: string;
     endTime: string;
+    matchedPower: number;
 
     initialized: boolean;
     configuration: GeneralLib.Configuration.Entity;
@@ -106,6 +108,7 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
             this.availableWh = supply._availableWh;
             this.startTime = supply._startTime;
             this.endTime = supply._endTime;
+            this.matchedPower = supply._matchedPower;
             this.initialized = true;
 
             if (this.configuration.logger) {

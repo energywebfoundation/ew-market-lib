@@ -82,6 +82,13 @@ contract MarketLogic is AgreementLogic {
         emit createdNewSupply(msg.sender, supplyID);
     }
 
+    function incrementSupplyPower(
+        uint _supplyId,
+        uint _power
+    ) external {
+        db.incrementSupplyPower(_supplyId, _power);
+    }
+
 	/// @notice function to return the length of the allDemands-array in the database
 	/// @return length of the allDemansa-array
     function getAllDemandListLength() external view returns (uint) {
@@ -124,7 +131,8 @@ contract MarketLogic is AgreementLogic {
             uint _currency,
             uint _availableWh,
             string memory _startTime,
-            string memory _endTime
+            string memory _endTime,
+            uint _matchedPower
         )
     {
         MarketDB.Supply memory supply = db.getSupply(_supplyId);
@@ -135,6 +143,7 @@ contract MarketLogic is AgreementLogic {
         _availableWh = supply.availableWh;
         _startTime = supply.startTime;
         _endTime = supply.endTime;
+        _matchedPower = supply.matchedPower;
     }
 
 }

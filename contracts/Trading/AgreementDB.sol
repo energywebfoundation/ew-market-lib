@@ -73,7 +73,7 @@ contract AgreementDB is Owned {
         allAgreements.push(Agreement({
             demandId: _demandId,
             supplyId: _supplyId,
-            approvedBySupplyOwner: false,
+            approvedBySupplyOwner: true,
             approvedByDemandOwner: false,
             allowedMatcher: emptyMatcher
         }));

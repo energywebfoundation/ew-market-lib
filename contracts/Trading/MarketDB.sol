@@ -37,6 +37,7 @@ contract MarketDB is AgreementDB {
         uint availableWh;
         string startTime;
         string endTime;
+        uint matchedPower;
     }
 
     /// @notice list with all created demands
@@ -100,9 +101,17 @@ contract MarketDB is AgreementDB {
             currency: _currency,
             availableWh: _availableWh,
             startTime: _startTime,
-            endTime: _endTime
+            endTime: _endTime,
+            matchedPower: 0
         }));
         _supplyId = allSupply.length>0?allSupply.length-1:0;
+    }
+
+    function incrementSupplyPower(
+        uint _supplyId,
+        uint _power
+    ) external {
+        allSupply[_supplyId].matchedPower += _power;
     }
 
 	/// @notice function to retrieve the length of the demands-array

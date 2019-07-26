@@ -67,9 +67,6 @@ contract AgreementLogic is RoleManagement, Updatable {
         if(msg.sender == demand.demandOwner){
             approveAgreementDemand(agreementId);
         }
-        if(msg.sender == supplyOwner){
-            approveAgreementSupply(agreementId);
-        }
 
         emit LogAgreementCreated(agreementId, _demandId, _supplyId);
     }
