@@ -125,15 +125,6 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
             this.approvedBySupplyOwner = agreement._approvedBySupplyOwner;
             this.approvedByDemandOwner = agreement._approvedByDemandOwner;
             this.allowedMatcher = agreement._allowedMatcher;
-            this.offChainProperties = await this.getOffChainProperties(
-                this.propertiesDocumentHash,
-                this.getUrl()
-            );
-
-            this.matcherOffChainProperties = await this.getOffChainProperties(
-                this.matcherPropertiesDocumentHash,
-                this.getMatcherURL()
-            );
 
             if (this.configuration.logger) {
                 this.configuration.logger.verbose(`Agreement with ${this.id} synced`);
