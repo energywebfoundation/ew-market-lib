@@ -1,7 +1,6 @@
 import Web3 = require('web3');
-import { Tx, BlockType } from 'web3/eth/types';
+import { Tx } from 'web3/eth/types';
 import { TransactionReceipt, Logs } from 'web3/types';
-import { JsonRPCResponse } from 'web3/providers';
 
 export declare interface SpecialTx extends Tx {
     privateKey: string;
@@ -53,6 +52,7 @@ export async function replayTransaction(web3: Web3, txHash: string) {
 
 export class GeneralFunctions {
     web3Contract: any;
+    web3: Web3;
 
     constructor(web3Contract) {
         this.web3Contract = web3Contract;
@@ -62,7 +62,7 @@ export class GeneralFunctions {
         const txData = {
             nonce: txParams.nonce,
             gasLimit: txParams.gas,
-            gasPrice: 0,
+            gasPrice: txParams.gasPrice,
             data: txParams.data,
             from: txParams.from,
             to: txParams.to
@@ -71,6 +71,16 @@ export class GeneralFunctions {
         const txObject = await web3.eth.accounts.signTransaction(txData, privateKey);
 
         return await web3.eth.sendSignedTransaction((txObject as any).rawTransaction);
+    }
+
+    async send(method: any, txParams: SpecialTx): Promise<TransactionReceipt> {
+        const transactionParams: SpecialTx = await this.buildTransactionParams(method, txParams);
+
+        if (transactionParams.privateKey === '') {
+            return await this.web3.eth.sendTransaction(transactionParams);
+        }
+
+        return await this.sendRaw(this.web3, transactionParams.privateKey, transactionParams);
     }
 
     getWeb3Contract() {
@@ -103,5 +113,50 @@ export class GeneralFunctions {
                 }
             );
         });
+    }
+
+    async buildTransactionParams(method, params): Promise<SpecialTx> {
+        params = params || {};
+        const networkGasPrice = await this.web3.eth.getGasPrice();
+
+        let methodGas;
+
+        if (params.privateKey) {
+            const privateKey = params.privateKey.startsWith('0x') ? params.privateKey : '0x' + params.privateKey;
+
+            params.from = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+        }
+
+        params.from = params.from || (await this.web3.eth.getAccounts())[0];
+
+        try {
+            methodGas = await method.estimateGas({
+                from: params.from
+            });
+        } catch (ex) {
+            if (!(await getClientVersion(this.web3)).includes('Parity')) {
+                throw new Error(ex);
+            }
+
+            const errorResult = await this.getErrorMessage(this.web3, {
+                from: params.from,
+                to: this.web3Contract._address,
+                data: params ? params.data : '',
+                gas: this.web3.utils.toHex(7000000)
+            });
+            throw new Error(errorResult);
+        }
+
+        return {
+            from: params.from,
+            gas: Math.round((params.gas ? params.gas : methodGas) * 2),
+            gasPrice: params.gasPrice ? params.gasPrice : networkGasPrice.toString(),
+            nonce: params.nonce
+                ? params.nonce
+                : await this.web3.eth.getTransactionCount(params.from),
+            data: params.data ? params.data : await method.encodeABI(),
+            to: this.web3Contract._address,
+            privateKey: params.privateKey ? params.privateKey : ''
+        };
     }
 }
