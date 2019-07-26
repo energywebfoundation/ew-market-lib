@@ -47,6 +47,11 @@ export const createSupply = async (
 
     const tx = await configuration.blockchainProperties.marketLogicInstance.createSupply(
         supplyPropertiesOnChain.assetId,
+        supplyPropertiesOnChain.price,
+        supplyPropertiesOnChain.currency,
+        supplyPropertiesOnChain.availableWh,
+        supplyPropertiesOnChain.startTime,
+        supplyPropertiesOnChain.endTime,
         {
             from: configuration.blockchainProperties.activeUser.address,
             privateKey: configuration.blockchainProperties.activeUser.privateKey
