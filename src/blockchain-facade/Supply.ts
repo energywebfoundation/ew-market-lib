@@ -22,6 +22,8 @@ export interface ISupplyOffchainProperties {
     currency: GeneralLib.Currency;
     availableWh: number;
     timeframe: GeneralLib.TimeFrame;
+    startTime: string;
+    endTime: string;
 }
 
 export interface ISupplyOnChainProperties
