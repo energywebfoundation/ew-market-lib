@@ -44,41 +44,11 @@ export interface IAgreementOnChainProperties
 
 export const createAgreement = async (
     agreementPropertiesOnChain: IAgreementOnChainProperties,
-    agreementPropertiesOffchain: IAgreementOffChainProperties,
-    matcherPropertiesOffchain: IMatcherOffChainProperties,
     configuration: GeneralLib.Configuration.Entity
 ): Promise<Entity> => {
     const agreement = new Entity(null, configuration);
 
-    const agreementOffChainStorageProperties = agreement.prepareEntityCreation(
-        agreementPropertiesOnChain,
-        agreementPropertiesOffchain,
-        AgreementOffchainPropertiesSchema,
-        agreement.getUrl()
-    );
-
-    const matcherOffchainStorageProperties = agreement.prepareEntityCreation(
-        agreementPropertiesOnChain,
-        matcherPropertiesOffchain,
-        MatcherOffChainPropertiesSchema,
-        agreement.getMatcherURL()
-    );
-
-    if (configuration.offChainDataSource) {
-        agreementPropertiesOnChain.url = agreement.getUrl();
-        agreementPropertiesOnChain.propertiesDocumentHash =
-            agreementOffChainStorageProperties.rootHash;
-
-        agreementPropertiesOnChain.matcherDBURL = agreement.getMatcherURL();
-        agreementPropertiesOnChain.matcherPropertiesDocumentHash =
-            matcherOffchainStorageProperties.rootHash;
-    }
-
     const tx = await configuration.blockchainProperties.marketLogicInstance.createAgreement(
-        agreementPropertiesOnChain.propertiesDocumentHash,
-        agreementPropertiesOnChain.url,
-        agreementPropertiesOnChain.matcherPropertiesDocumentHash,
-        agreementPropertiesOnChain.matcherDBURL,
         agreementPropertiesOnChain.demandId,
         agreementPropertiesOnChain.supplyId,
         {
@@ -90,16 +60,6 @@ export const createAgreement = async (
     agreement.id = configuration.blockchainProperties.web3.utils
         .hexToNumber(tx.logs[0].topics[1])
         .toString();
-
-    await agreement.putToOffChainStorage(
-        agreementPropertiesOffchain,
-        agreementOffChainStorageProperties
-    );
-    await agreement.putToOffChainStorage(
-        matcherPropertiesOffchain,
-        matcherOffchainStorageProperties,
-        agreement.getMatcherURL()
-    );
 
     if (configuration.logger) {
         configuration.logger.info(`Agreement ${agreement.id} created`);

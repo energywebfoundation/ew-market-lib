@@ -47,17 +47,7 @@ contract AgreementLogic is RoleManagement, Updatable {
         assetContractLookup = _assetContractLookup;
     }
 
-	/// @notice Function to create a agreement
-	/// @dev will return an event with the event-Id
-	/// @param _propertiesDocumentHash document-hash with all the properties of the demand
-	/// @param _documentDBURL url-address of the demand
-	/// @param _demandId the demand Id
-	/// @param _supplyId the supply Id
     function createAgreement(
-        string calldata _propertiesDocumentHash,
-        string calldata _documentDBURL,
-        string calldata _matcherPropertiesDocumentHash,
-        string calldata _matcherDBURL,
         uint _demandId,
         uint _supplyId
     )
@@ -70,15 +60,9 @@ contract AgreementLogic is RoleManagement, Updatable {
 
         require(msg.sender == demand.demandOwner || msg.sender == supplyOwner, "createDemand: wrong owner when creating");
         uint agreementId = db.createAgreementDB(
-            _propertiesDocumentHash,
-            _documentDBURL,
-            _matcherPropertiesDocumentHash,
-            _matcherDBURL,
             _demandId,
             _supplyId
         );
-
-        setAgreementMatcher(agreementId);
 
         if(msg.sender == demand.demandOwner){
             approveAgreementDemand(agreementId);
@@ -135,10 +119,6 @@ contract AgreementLogic is RoleManagement, Updatable {
         )
     {
         MarketDB.Agreement memory agreement = db.getAgreementDB(_agreementId);
-        _propertiesDocumentHash = agreement.propertiesDocumentHash;
-        _documentDBURL = agreement.documentDBURL;
-        _matcherPropertiesDocumentHash = agreement.matcherPropertiesDocumentHash;
-        _matcherDBURL = agreement.matcherDBURL;
         _demandId = agreement.demandId;
         _supplyId = agreement.supplyId;
         _approvedBySupplyOwner = agreement.approvedBySupplyOwner;

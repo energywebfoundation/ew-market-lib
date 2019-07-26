@@ -100,20 +100,12 @@ export class AgreementLogic extends GeneralFunctions {
     }
 
     async createAgreement(
-        _propertiesDocumentHash: string,
-        _documentDBURL: string,
-        _matcherPropertiesDocumentHash: string,
-        _matcherDBURL: string,
         _demandId: number,
         _supplyId: number,
         txParams?: SpecialTx
     ) {
         const method = this.web3Contract.methods
             .createAgreement(
-                _propertiesDocumentHash,
-                _documentDBURL,
-                _matcherPropertiesDocumentHash,
-                _matcherDBURL,
                 _demandId,
                 _supplyId
             );

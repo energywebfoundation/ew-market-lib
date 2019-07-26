@@ -140,20 +140,12 @@ export class MarketDB extends GeneralFunctions {
     }
 
     async createAgreementDB(
-        _propertiesDocumentHash: string,
-        _documentDBURL: string,
-        _matcherPropertiesDocumentHash: string,
-        _matcherDBURL: string,
         _demandId: number,
         _supplyId: number,
         txParams?: SpecialTx
     ) {
         const method = this.web3Contract.methods
             .createAgreementDB(
-                _propertiesDocumentHash,
-                _documentDBURL,
-                _matcherPropertiesDocumentHash,
-                _matcherDBURL,
                 _demandId,
                 _supplyId
             );

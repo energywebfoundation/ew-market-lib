@@ -22,10 +22,6 @@ import "ew-utils-general-lib/contracts/Msc/Owned.sol";
 contract AgreementDB is Owned {
 
     struct Agreement {
-        string propertiesDocumentHash;
-        string documentDBURL;
-        string matcherPropertiesDocumentHash;
-        string matcherDBURL;
         uint demandId;
         uint supplyId;
         bool approvedBySupplyOwner;
@@ -63,18 +59,8 @@ contract AgreementDB is Owned {
         return (a.approvedByDemandOwner && a.approvedBySupplyOwner);
     }
 
-	/// @notice function to create a agreement
-	/// @param _propertiesDocumentHash document-hash with all the properties of the agreement
-	/// @param _documentDBURL url-address of the agreement
-	/// @param _demandId the demand Id
-	/// @param _supplyId the supply Id
-	/// @return the index and thus the identifier of a agreement
     function createAgreementDB
     (
-        string calldata _propertiesDocumentHash,
-        string calldata _documentDBURL,
-        string calldata _matcherPropertiesDocumentHash,
-        string calldata _matcherDBURL,
         uint _demandId,
         uint _supplyId
    )
@@ -85,10 +71,6 @@ contract AgreementDB is Owned {
 
         address[] memory emptyMatcher = new address[](0);
         allAgreements.push(Agreement({
-            propertiesDocumentHash: _propertiesDocumentHash,
-            documentDBURL: _documentDBURL,
-            matcherPropertiesDocumentHash: _matcherPropertiesDocumentHash,
-            matcherDBURL: _matcherDBURL,
             demandId: _demandId,
             supplyId: _supplyId,
             approvedBySupplyOwner: false,
@@ -126,8 +108,6 @@ contract AgreementDB is Owned {
         onlyOwner
     {
         Agreement storage a = allAgreements[_agreementId];
-        a.matcherPropertiesDocumentHash = _matcherPropertiesDocumentHash;
-        a.matcherDBURL = _matcherDBURL;
     }
 
 	/// @notice Returns a agreement-struct
