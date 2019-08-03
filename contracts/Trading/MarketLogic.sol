@@ -72,8 +72,8 @@ contract MarketLogic is AgreementLogic {
         uint _price,
         uint _currency,
         uint _availableWh,
-        string calldata _startTime,
-        string calldata _endTime
+        uint _startTime,
+        uint _endTime
     )
         external
      {
@@ -130,8 +130,8 @@ contract MarketLogic is AgreementLogic {
             uint _price,
             uint _currency,
             uint _availableWh,
-            string memory _startTime,
-            string memory _endTime,
+            uint _startTime,
+            uint _endTime,
             uint _matchedPower
         )
     {

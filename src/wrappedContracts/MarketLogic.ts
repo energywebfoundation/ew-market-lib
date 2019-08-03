@@ -112,8 +112,8 @@ export class MarketLogic extends GeneralFunctions {
         _price: number,
         _currency: number,
         _availableWh: number,
-        _startTime: string,
-        _endTime: string,
+        _startTime: number,
+        _endTime: number,
         txParams?: SpecialTx
     ) {
         const method = this.web3Contract.methods.createSupply(_assetId,

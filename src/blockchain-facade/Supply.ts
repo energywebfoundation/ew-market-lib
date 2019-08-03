@@ -22,8 +22,8 @@ export interface ISupplyOnChainProperties
     price: number;
     currency: GeneralLib.Currency;
     availableWh: number;
-    startTime: string;
-    endTime: string;
+    startTime: number;
+    endTime: number;
     matchedPower: number;
 }
 
@@ -79,8 +79,8 @@ export class Entity extends GeneralLib.BlockchainDataModelEntity.Entity
     price: number;
     currency: GeneralLib.Currency;
     availableWh: number;
-    startTime: string;
-    endTime: string;
+    startTime: number;
+    endTime: number;
     matchedPower: number;
 
     initialized: boolean;

@@ -173,7 +173,7 @@ contract AgreementLogic is RoleManagement, Updatable {
         assert(agreement.allowedMatcher.length == 0);
         MarketDB.Supply memory supply = db.getSupply(agreement.supplyId);
 
-        (,,,,,address[] memory matcherArray,,,,) = AssetGeneralInterface(
+        (,,,,,address[] memory matcherArray,,,,,) = AssetGeneralInterface(
             assetContractLookup.assetProducingRegistry()
         ).getAssetGeneral(supply.assetId);
 

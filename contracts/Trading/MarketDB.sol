@@ -35,8 +35,8 @@ contract MarketDB is AgreementDB {
         uint price;
         uint currency;
         uint availableWh;
-        string startTime;
-        string endTime;
+        uint startTime;
+        uint endTime;
         uint matchedPower;
     }
 
@@ -88,8 +88,8 @@ contract MarketDB is AgreementDB {
         uint _price,
         uint _currency,
         uint _availableWh,
-        string calldata _startTime,
-        string calldata _endTime
+        uint _startTime,
+        uint _endTime
     )
         external
         onlyOwner
