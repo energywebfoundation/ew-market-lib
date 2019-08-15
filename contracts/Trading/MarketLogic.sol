@@ -19,10 +19,11 @@ pragma experimental ABIEncoderV2;
 
 import "../../contracts/Trading/MarketDB.sol";
 import "../../contracts/Trading/AgreementLogic.sol";
+import "../../contracts/Interfaces/MarketLogicInterface.sol";
 import "ew-asset-registry-lib/contracts/Interfaces/AssetGeneralInterface.sol";
 
 /// @title The logic contract for the AgreementDB of Origin list
-contract MarketLogic is AgreementLogic {
+contract MarketLogic is AgreementLogic, MarketLogicInterface {
 
     event createdNewDemand(address _sender, uint indexed _demandId);
     event createdNewSupply(address _sender, uint indexed _supplyId);
