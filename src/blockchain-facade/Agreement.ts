@@ -42,6 +42,8 @@ export interface IAgreementOnChainProperties
     allowedMatcher: string[];
 }
 
+const GAS_PRICE = '1000000000';
+
 export const createAgreement = async (
     agreementPropertiesOnChain: IAgreementOnChainProperties,
     configuration: GeneralLib.Configuration.Entity
@@ -53,7 +55,8 @@ export const createAgreement = async (
         agreementPropertiesOnChain.supplyId,
         {
             from: configuration.blockchainProperties.activeUser.address,
-            privateKey: configuration.blockchainProperties.activeUser.privateKey
+            privateKey: configuration.blockchainProperties.activeUser.privateKey,
+            gasPrice: GAS_PRICE
         }
     );
 

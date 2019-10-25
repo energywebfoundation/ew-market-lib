@@ -39,6 +39,8 @@ export const getAllSupplies = async (configuration: GeneralLib.Configuration.Ent
     return (await Promise.all(suppliesPromises)).filter(promise => promise.initialized);
 };
 
+const GAS_PRICE = '1000000000';
+
 export const createSupply = async (
     supplyPropertiesOnChain: ISupplyOnChainProperties,
     configuration: GeneralLib.Configuration.Entity
@@ -55,7 +57,8 @@ export const createSupply = async (
         supplyPropertiesOnChain.endTime,
         {
             from: configuration.blockchainProperties.activeUser.address,
-            privateKey: configuration.blockchainProperties.activeUser.privateKey
+            privateKey: configuration.blockchainProperties.activeUser.privateKey,
+            gasPrice: GAS_PRICE
         }
     );
 

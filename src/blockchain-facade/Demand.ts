@@ -46,6 +46,8 @@ export const getDemandListLength = async (
     return configuration.blockchainProperties.marketLogicInstance.getAllDemandListLength();
 };
 
+const GAS_PRICE = '1000000000';
+
 export const createDemand = async (
     demandPropertiesOnChain: IDemandOnChainProperties,
     demandPropertiesOffChain: IDemandOffChainProperties,
@@ -70,7 +72,8 @@ export const createDemand = async (
         demandPropertiesOnChain.url,
         {
             from: configuration.blockchainProperties.activeUser.address,
-            privateKey: configuration.blockchainProperties.activeUser.privateKey
+            privateKey: configuration.blockchainProperties.activeUser.privateKey,
+            gasPrice: GAS_PRICE
         }
     );
 
