@@ -22,6 +22,8 @@ import Web3 from 'web3';
 import { deploy } from 'ew-utils-deployment';
 import { MarketContractLookupJSON, MarketLogicJSON, MarketDBJSON } from '..';
 
+const GAS_PRICE = '1000000000';
+
 export async function migrateMarketRegistryContracts(
     web3: Web3,
     assetContractLookupAddress: string,
@@ -31,7 +33,8 @@ export async function migrateMarketRegistryContracts(
         const privateKeyDeployment = deployKey.startsWith('0x') ? deployKey : '0x' + deployKey;
 
         const marketContractLookupAddress = (await deploy(web3, MarketContractLookupJSON.bytecode, {
-            privateKey: privateKeyDeployment
+            privateKey: privateKeyDeployment,
+            gasPrice: GAS_PRICE
         })).contractAddress;
 
         const marketLogicAddress = (await deploy(
@@ -43,14 +46,14 @@ export async function migrateMarketRegistryContracts(
                         [assetContractLookupAddress, marketContractLookupAddress]
                     )
                     .substr(2),
-            { privateKey: privateKeyDeployment }
+            { privateKey: privateKeyDeployment, gasPrice: GAS_PRICE }
         )).contractAddress;
 
         const marketDBAddress = (await deploy(
             web3,
             MarketDBJSON.bytecode +
                 web3.eth.abi.encodeParameter('address', marketLogicAddress).substr(2),
-            { privateKey: privateKeyDeployment }
+            { privateKey: privateKeyDeployment, gasPrice: GAS_PRICE }
         )).contractAddress;
 
         const marketContractLookup = new MarketContractLookup(web3, marketContractLookupAddress);
@@ -59,7 +62,7 @@ export async function migrateMarketRegistryContracts(
             assetContractLookupAddress,
             marketLogicAddress,
             marketDBAddress,
-            { privateKey: privateKeyDeployment }
+            { privateKey: privateKeyDeployment, gasPrice: GAS_PRICE }
         );
 
         const resultMapping = {} as any;
